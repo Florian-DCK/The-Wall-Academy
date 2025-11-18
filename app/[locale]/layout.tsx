@@ -3,6 +3,7 @@ import './globals.css';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import Header from '@/components/Header';
 
 export const metadata: Metadata = {
 	title: 'New App',
@@ -33,8 +34,9 @@ export default async function RootLayout({
 
 	return (
 		<html lang={locale}>
-			<body className={`antialiased`}>
+			<body className={`antialiased flex flex-col h-screen`}>
 				<NextIntlClientProvider locale={locale} messages={messages}>
+					<Header isConnected={false} />
 					{children}
 				</NextIntlClientProvider>
 			</body>

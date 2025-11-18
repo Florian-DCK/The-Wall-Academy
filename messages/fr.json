@@ -1,5 +1,14 @@
 {
 	"HomePage": {
-		"title": "Hello world!"
+		"title": "Conserver chaque souvenir<br></br>Un stage à la fois.",
+		"cardTitle": "Identifiez vous !",
+		"cardDescription": "Connectez-vous pour accéder à la galerie du stage en question.",
+		"selectPlaceholder": "Sélectionnez un stage",
+		"passwordPlaceholder": "Entrez le mot de passe",
+		"passwordLabel": "Mot de passe",
+		"selectLabel": "Stage",
+		"buttonSubmit": "Accéder aux photos !",
+		"successMessage": "Connexion réussie.",
+		"errorMessage": "Une erreur est survenue, vérifiez vos identifiants."
 	}
 }
