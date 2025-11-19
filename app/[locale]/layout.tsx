@@ -4,6 +4,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Header from "@/components/Header";
+import CursorFollower from "@/components/CursorFollower";
 import { Bebas_Neue, Space_Grotesk } from "next/font/google";
 import { ViewTransition } from "react";
 
@@ -51,7 +52,8 @@ export default async function RootLayout({
       lang={locale}
       className={`${headingFont.variable} ${bodyFont.variable}`}
     >
-      <body className="antialiased flex flex-col min-h-screen">
+      <body className="antialiased flex flex-col min-h-screen cursor-crosshair">
+        <CursorFollower />
         <ViewTransition>
           <NextIntlClientProvider locale={locale} messages={messages}>
             <Header isConnected={false} />

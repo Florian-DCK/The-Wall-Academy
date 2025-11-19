@@ -76,6 +76,10 @@
   --sidebar-ring: #f15a24;
 }
 
+* {
+  cursor: crosshair;
+}
+
 .dark {
   --background: #fff9f4;
   --foreground: #04070d;
