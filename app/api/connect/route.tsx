@@ -15,7 +15,6 @@ export async function POST(request: Request) {
 			);
 		}
 
-		// La c'est pas super super sécurisé mais ça devrait aller
 		const galleryInfo = await prisma.gallery.findFirst({
 			where: { id: parseInt(id), password: password },
 		});

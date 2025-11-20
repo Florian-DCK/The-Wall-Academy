@@ -68,7 +68,6 @@ export default function Home() {
 					router.push(`/gallery?page=1`);
 				} else {
 					alert(t('errorMessage'));
-					throw new Error('API error');
 				}
 			})
 			.catch((err) => {
