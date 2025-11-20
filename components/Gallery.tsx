@@ -60,6 +60,7 @@ const Gallery: React.FC<GalleryProps> = ({ galleryID, images }) => {
 				order: 8,
 				isButton: true,
 				tagName: 'a',
+				className: 'custom-download',
 				html: {
 					isCustomSVG: true,
 					inner:
