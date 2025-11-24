@@ -137,9 +137,9 @@
   --card-foreground: #fff9f4;
   --popover: #0f131f;
   --popover-foreground: #fff9f4;
-  --primary: #f15a24;
+  --primary: rgb(203, 36, 24);
   --primary-foreground: #fff3ea;
-  --secondary: #fbb13c;
+  --secondary: rgb(231, 144, 53);
   --secondary-foreground: #1a0d05;
   --muted: #151a2a;
   --muted-foreground: #c7cad8;

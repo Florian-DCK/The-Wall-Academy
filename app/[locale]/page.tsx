@@ -19,7 +19,7 @@ const Home = () => {
           {t.rich("title", {
             br: () => <br />,
             highlight: (chunks) => (
-              <span className="bg-linear-to-r from-[#ff8218] via-[#f15a24] to-[#c3200f] bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-secondary to-primary bg-clip-text text-transparent">
                 {chunks}
               </span>
             ),
