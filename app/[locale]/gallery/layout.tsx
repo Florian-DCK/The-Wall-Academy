@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import "./home.css";
+import "./gallery.css";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
+import Header from "@/components/Header";
 import CursorFollower from "@/components/CursorFollower";
 import { Bebas_Neue, Space_Grotesk } from "next/font/google";
 import { ViewTransition } from "react";
@@ -40,18 +41,22 @@ export default async function RootLayout({
   let messages: Record<string, unknown> | undefined;
   try {
     // Le chemin relatif depuis `app/[locale]/layout.tsx` vers `messages/{locale}.json`
-    messages = (await import(`../../messages/${locale}.json`)).default;
+    messages = (await import(`../../../messages/${locale}.json`)).default;
   } catch {
     // Si les messages ne sont pas trouvés, afficher 404 (ou gérer autrement)
     notFound();
   }
 
   return (
-    <html lang={locale} className={`font-body`}>
-      <body className="antialiased flex flex-col min-h-screen cursor-crosshair text-white">
+    <html
+      lang={locale}
+      className={`${headingFont.variable} ${bodyFont.variable}`}
+    >
+      <body className="antialiased flex flex-col min-h-screen cursor-crosshair">
         <CursorFollower />
         <ViewTransition>
           <NextIntlClientProvider locale={locale} messages={messages}>
+            <Header isConnected={false} />
             {children}
           </NextIntlClientProvider>
         </ViewTransition>

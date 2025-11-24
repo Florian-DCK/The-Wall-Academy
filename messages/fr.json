@@ -1,21 +1,24 @@
 {
-	"HomePage": {
-		"title": "Accédez à chaque instant iconique<br></br>de leur aventure.",
-		"cardTitle": "Identifiez vous !",
-		"cardDescription": "Connectez-vous pour accéder à la galerie du stage en question.",
-		"selectPlaceholder": "Sélectionnez un stage",
-		"selectAnotherPlaceholder": "Sélectionnez un autre stage",
-		"passwordPlaceholder": "Entrez le mot de passe",
-		"passwordLabel": "Mot de passe",
-		"selectLabel": "Stage",
-		"buttonSubmit": "Accéder aux photos !",
-		"successMessage": "Connexion réussie.",
-		"errorMessage": "Une erreur est survenue, vérifiez vos identifiants.",
-		"privacyNote": "Accès sécurisé pour les gardiens inscrits",
-		"heroClaim": "Leurs moments forts"
-	},
-	"Header": {
-		"connect": "Choisir un autre album",
-		"toggleNavigation": "Basculer le menu de navigation"
-	}
+  "Home": {
+    "title": "mon<br></br>objectif:<br></br>former<br></br>les<br></br><highlight>meilleurs</highlight><br></br><highlight>gardiens</highlight><br></br>de but."
+  },
+  "Gallery": {
+    "title": "Accédez à chaque instant iconique<br></br>de leur aventure.",
+    "cardTitle": "Identifiez vous !",
+    "cardDescription": "Connectez-vous pour accéder à la galerie du stage en question.",
+    "selectPlaceholder": "Sélectionnez un stage",
+    "selectAnotherPlaceholder": "Sélectionnez un autre stage",
+    "passwordPlaceholder": "Entrez le mot de passe",
+    "passwordLabel": "Mot de passe",
+    "selectLabel": "Stage",
+    "buttonSubmit": "Accéder aux photos !",
+    "successMessage": "Connexion réussie.",
+    "errorMessage": "Une erreur est survenue, vérifiez vos identifiants.",
+    "privacyNote": "Accès sécurisé pour les gardiens inscrits",
+    "heroClaim": "Leurs moments forts"
+  },
+  "Header": {
+    "connect": "Choisir un autre album",
+    "toggleNavigation": "Basculer le menu de navigation"
+  }
 }

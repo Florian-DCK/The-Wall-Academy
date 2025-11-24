@@ -1,258 +1,263 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-import { decrypt } from "@/app/lib/session";
-import type { SessionPayload } from "@/app/lib/definitions";
-import Gallery from "@/components/Gallery";
+"use client";
+
+import { useTranslations } from "next-intl";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Input } from "@/components/ui/input";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 
-type GalleryData = { id: number; title: string; createdAt: string };
-type GalleryImage = {
-  largeURL: string;
-  thumbnailURL: string;
-  width: number;
-  height: number;
-};
+export default function Home() {
+  const t = useTranslations("Gallery");
+  const router = useRouter();
+  const [galleries, setGalleries] = useState<
+    Array<{ id: number; title: string }>
+  >([]);
+  const [selectedId, setSelectedId] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-type GalleryPagination = {
-  page: number;
-  pageSize: number;
-  total: number;
-  totalPages: number;
-  hasNext: boolean;
-};
+  useEffect(() => {
+    fetch("/api/gallery")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && data.data) {
+          setGalleries(data.data);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching galleries:", error);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
 
-const DEFAULT_PAGE_SIZE = 20;
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    if (!selectedId) {
+      alert(t("selectPlaceholder"));
+      return;
+    }
+    const fd = new FormData(form);
+    fd.set("id", selectedId);
+    const dataObj = Object.fromEntries(fd.entries());
 
-const parseNumber = (value: unknown, fallback: number) => {
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-};
+    // Affiche les valeurs récupérées (pour debug)
+    console.log("Form values:", dataObj);
 
-const isPromiseLike = <T,>(value: unknown): value is PromiseLike<T> => {
-  return (
-    value !== null &&
-    typeof value === "object" &&
-    "then" in (value as Record<string, unknown>) &&
-    typeof (value as Record<string, unknown>).then === "function"
-  );
-};
-
-const getBaseUrl = () =>
-  process.env.NEXT_PUBLIC_APP_URL ??
-  (process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000");
-
-async function getGalleryData(
-  galleryId: string,
-  cookieHeader?: string
-): Promise<GalleryData> {
-  const init: RequestInit = { cache: "no-store" };
-  if (cookieHeader) {
-    init.headers = { cookie: cookieHeader };
-  }
-
-  const response = await fetch(
-    `${getBaseUrl()}/api/gallery?gallery=${galleryId}`,
-    init
-  );
-
-  if (!response.ok) {
-    throw new Error("Unable to load gallery");
-  }
-
-  const json = await response.json();
-  if (!json?.data) {
-    throw new Error("Gallery not found");
-  }
-
-  return json.data as GalleryData;
-}
-
-async function getGalleryImages(
-  galleryId: string,
-  page: number,
-  cookieHeader?: string
-): Promise<{ images: GalleryImage[]; pagination: GalleryPagination }> {
-  const init: RequestInit = { cache: "no-store" };
-  if (cookieHeader) {
-    init.headers = { cookie: cookieHeader };
-  }
-
-  const response = await fetch(
-    `${getBaseUrl()}/api/images?galleryId=${galleryId}&page=${page}`,
-    init
-  );
-
-  if (response.status === 401 || response.status === 403) {
-    redirect("/");
-  }
-
-  if (!response.ok) {
-    throw new Error("Unable to load gallery images");
-  }
-
-  const json = await response.json();
-  const images = Array.isArray(json?.data) ? (json.data as GalleryImage[]) : [];
-  const pagination: GalleryPagination = {
-    page: parseNumber(json?.pagination?.page, page),
-    pageSize: parseNumber(json?.pagination?.pageSize, DEFAULT_PAGE_SIZE),
-    total: parseNumber(json?.pagination?.total, images.length),
-    totalPages: parseNumber(
-      json?.pagination?.totalPages,
-      images.length ? 1 : 0
-    ),
-    hasNext: Boolean(json?.pagination?.hasNext ?? false),
+    fetch("/api/connect", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(dataObj),
+    })
+      .then(async (response) => {
+        await response.json().catch(() => null);
+        if (response.ok) {
+          router.push(`/gallery/view?page=1`);
+        } else {
+          alert(t("errorMessage"));
+        }
+      })
+      .catch((err) => {
+        console.error("Request failed:", err);
+      });
   };
 
-  return { images, pagination };
-}
-
-type PageProps = {
-  params: { locale: string };
-  searchParams?:
-    | { page?: string | string[] }
-    | Promise<{ page?: string | string[] } | undefined>;
-};
-
-const buildPaginationSegments = (current: number, total: number) => {
-  const delta = 1;
-  const range: number[] = [];
-  for (let i = 1; i <= total; i++) {
-    if (
-      i === 1 ||
-      i === total ||
-      (i >= current - delta && i <= current + delta)
-    ) {
-      range.push(i);
-    }
-  }
-
-  const segments: Array<number | "ellipsis"> = [];
-  let previous = 0;
-  for (const page of range) {
-    if (previous) {
-      if (page - previous === 2) {
-        segments.push(previous + 1);
-      } else if (page - previous > 2) {
-        segments.push("ellipsis");
-      }
-    }
-    segments.push(page);
-    previous = page;
-  }
-
-  return segments;
-};
-
-export default async function Page({ params, searchParams }: PageProps) {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get("session")?.value;
-  if (!sessionToken) {
-    redirect("/");
-  }
-
-  const payload = (await decrypt(sessionToken)) as SessionPayload | undefined;
-  const galleryId = payload?.GalleryId;
-  if (!galleryId) {
-    redirect("/");
-  }
-
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((cookie) => `${cookie.name}=${cookie.value}`)
-    .join("; ");
-
-  const resolvedSearchParams = isPromiseLike(searchParams)
-    ? await searchParams
-    : searchParams;
-  const rawPage = resolvedSearchParams?.page;
-  const currentPageRaw = Array.isArray(rawPage) ? rawPage[0] : rawPage ?? "1";
-  const parsedPage = Number.parseInt(currentPageRaw, 10);
-  const currentPage =
-    Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1;
-
-  const [data, galleryResponse] = await Promise.all([
-    getGalleryData(galleryId, cookieHeader),
-    getGalleryImages(galleryId, currentPage, cookieHeader),
-  ]);
-
-  const { images, pagination } = galleryResponse;
-  const totalPages = Math.max(pagination.totalPages, 1);
-  const segments = buildPaginationSegments(pagination.page, totalPages);
-
-  const buildHref = (page: number) => {
-    const params = new URLSearchParams();
-    if (page > 1) {
-      params.set("page", page.toString());
-    }
-    const query = params.toString();
-    return query ? `?${query}` : `?${""}`;
-  };
-
-  const disablePrev = pagination.page <= 1;
-  const disableNext = pagination.page >= totalPages;
+  const recentGalleries = galleries.slice(-3).reverse();
+  const cardsOnlyGalleries = [...galleries].reverse();
+  const olderGalleries =
+    galleries.length > 3 ? galleries.slice(0, galleries.length - 3) : [];
+  const shouldShowCardsOnly =
+    !isLoading && galleries.length > 0 && galleries.length <= 3;
+  const shouldShowHybrid = !isLoading && galleries.length > 3;
+  const isOlderSelection = olderGalleries.some(
+    (gallery) => gallery.id.toString() === selectedId
+  );
+  const selectValue = isOlderSelection ? selectedId : "";
+  const showEmptyState = !isLoading && galleries.length === 0;
 
   return (
-    <main className="min-h-screen pb-24 pt-10 sm:pt-14">
-      <div className="mx-auto flex w-full flex-col gap-8 px-4 py-4 sm:px-6 lg:px-16">
-        <header className="border-b border-[#edbb66] pb-6">
-          <p className="text-xs uppercase tracking-[0.25em] text-slate-400 sm:text-sm">
-            The Wall Academy
+    <main className="relative flex flex-1 w-full items-center justify-center px-4 py-12">
+      <div className="glass-panel relative mx-auto flex w-full max-w-5xl flex-col gap-10 rounded-3xl px-6 py-10 sm:px-10">
+        <div className="space-y-4 text-center">
+          <p className="text-sm font-heading uppercase tracking-[0.5em] text-white/70">
+            {t("heroClaim") ?? "Mon objectif"}
           </p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl">
-            {data.title}
+          <h1 className="text-4xl font-heading text-white sm:text-5xl md:text-6xl">
+            {t.rich("title", {
+              br: () => <br />,
+              highlight: (chunks) => (
+                <span className="bg-linear-to-r from-[#ff8218] via-[#f15a24] to-[#c3200f] bg-clip-text text-transparent">
+                  {chunks}
+                </span>
+              ),
+            })}
           </h1>
-        </header>
-        <Gallery galleryID={galleryId} images={images} />
+        </div>
+
+        <form
+          className="space-y-5 rounded-2xl border border-white/10 bg-[#070a12]/80 p-6 shadow-[0_25px_60px_rgba(0,0,0,0.55)]"
+          onSubmit={handleSubmit}
+        >
+          <div className="flex flex-col gap-2">
+            <span className="text-xs font-heading uppercase tracking-[0.4em] text-white/60">
+              {t("selectPlaceholder")}
+            </span>
+            {isLoading && (
+              <div className="flex justify-center p-4">
+                <Spinner />
+              </div>
+            )}
+            {shouldShowCardsOnly && (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {recentGalleries.map((gallery) => {
+                  const value = gallery.id.toString();
+                  const isActive = selectedId === value;
+                  return (
+                    <label
+                      key={gallery.id}
+                      htmlFor={`gallery-${gallery.id}`}
+                      className={cn(
+                        "flex justify-between cursor-pointer gap-1 rounded-2xl border border-white/10 bg-black/10 p-4 transition-colors",
+                        isActive
+                          ? "border-[#f15a24] bg-white/5"
+                          : "hover:border-white/30"
+                      )}
+                    >
+                      <div className="flex flex-col gap-1">
+                        <input
+                          type="radio"
+                          id={`gallery-${gallery.id}`}
+                          className="sr-only"
+                          name="id"
+                          value={value}
+                          checked={isActive}
+                          onChange={() => setSelectedId(value)}
+                        />
+                        <span className="text-lg font-heading text-white">
+                          {gallery.title}
+                        </span>
+                      </div>
+                      <div
+                        className={`h-5 w-5 border rounded-full shrink-0 mt-auto ${
+                          isActive
+                            ? "border-[#f15a24] bg-primary"
+                            : "border-white/40"
+                        }`}
+                      ></div>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+            {shouldShowHybrid && (
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {recentGalleries.map((gallery) => {
+                  const value = gallery.id.toString();
+                  const isActive = selectedId === value;
+                  return (
+                    <label
+                      key={gallery.id}
+                      htmlFor={`gallery-${gallery.id}`}
+                      className={cn(
+                        "flex justify-between cursor-pointer gap-1 rounded-2xl border border-white/10 bg-black/10 p-4 transition-colors",
+                        isActive
+                          ? "border-[#f15a24] bg-white/5"
+                          : "hover:border-white/30"
+                      )}
+                    >
+                      <div className="flex flex-col gap-1">
+                        <input
+                          type="radio"
+                          id={`gallery-${gallery.id}`}
+                          className="sr-only"
+                          name="id"
+                          value={value}
+                          checked={isActive}
+                          onChange={() => setSelectedId(value)}
+                        />
+                        <span className="text-lg font-heading text-white">
+                          {gallery.title}
+                        </span>
+                      </div>
+                      <div
+                        className={`h-5 w-5 border rounded-full shrink-0 mt-auto ${
+                          isActive
+                            ? "border-[#f15a24] bg-primary"
+                            : "border-white/40"
+                        }`}
+                      ></div>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+            {shouldShowHybrid && (
+              <>
+                <Select
+                  value={selectValue}
+                  onValueChange={(v) => setSelectedId(v)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={t("selectAnotherPlaceholder")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {olderGalleries.map((gallery) => (
+                        <SelectItem
+                          key={gallery.id}
+                          value={gallery.id.toString()}
+                        >
+                          {gallery.title}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </>
+            )}
+            <input type="hidden" name="id" value={selectedId} />
+            {showEmptyState && (
+              <p className="text-sm text-white/60">
+                Aucune galerie disponible pour le moment.
+              </p>
+            )}
+          </div>
+          <div className="flex flex-col gap-2">
+            <span className="text-xs font-heading uppercase tracking-[0.4em] text-white/60">
+              {t("passwordPlaceholder")}
+            </span>
+            <Input
+              id="password"
+              className="font-heading text-white/60"
+              name="password"
+              type="password"
+              placeholder={t("passwordPlaceholder")}
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <p className="text-xs font-semibold uppercase tracking-[0.4em] text-white/60">
+              {t("privacyNote")}
+            </p>
+            <Button className="w-full text-lg md:w-auto">
+              {t("buttonSubmit")}
+            </Button>
+          </div>
+        </form>
       </div>
-      {totalPages > 1 && (
-        <Pagination className="fixed bottom-4 left-0 right-0 mx-auto w-[calc(100%-2rem)] max-w-md transform rounded-full border border-white/10 bg-slate-900/90 px-2 py-2 text-slate-50 shadow-lg shadow-black/40 backdrop-blur sm:px-4">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href={buildHref(Math.max(1, pagination.page - 1))}
-                aria-disabled={disablePrev}
-                tabIndex={disablePrev ? -1 : undefined}
-                className={disablePrev ? "pointer-events-none opacity-50" : ""}
-              />
-            </PaginationItem>
-            {segments.map((segment, index) => (
-              <PaginationItem key={`${segment}-${index}`}>
-                {segment === "ellipsis" ? (
-                  <PaginationEllipsis />
-                ) : (
-                  <PaginationLink
-                    className={
-                      segment === pagination.page ? "text-slate-700" : ""
-                    }
-                    href={buildHref(segment)}
-                    isActive={segment === pagination.page}
-                  >
-                    {segment}
-                  </PaginationLink>
-                )}
-              </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                href={buildHref(Math.min(totalPages, pagination.page + 1))}
-                aria-disabled={disableNext}
-                tabIndex={disableNext ? -1 : undefined}
-                className={disableNext ? "pointer-events-none opacity-50" : ""}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
     </main>
   );
 }

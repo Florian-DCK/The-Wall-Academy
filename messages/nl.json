@@ -1,21 +1,24 @@
 {
-	"HomePage": {
-		"title": "Krijg toegang tot elk iconisch moment<br></br>van hun avontuur.",
-		"cardTitle": "Meld je aan!",
-		"cardDescription": "Log in om de galerij van het geselecteerde kamp te bekijken.",
-		"selectPlaceholder": "Selecteer een kamp",
-		"selectAnotherPlaceholder": "Selecteer een ander kamp",
-		"passwordPlaceholder": "Voer het wachtwoord in",
-		"passwordLabel": "Wachtwoord",
-		"selectLabel": "Kamp",
-		"buttonSubmit": "Bekijk de foto's!",
-		"successMessage": "Succesvol verbonden.",
-		"errorMessage": "Er is een fout opgetreden, controleer je gegevens.",
-		"privacyNote": "Beveiligde toegang voor ingeschreven begeleiders",
-		"heroClaim": "Hun hoogtepunten"
-	},
-	"Header": {
-		"connect": "Kies een ander album",
-		"toggleNavigation": "Navigatiemenu wisselen"
-	}
+  "Home": {
+    "title": "mijn doel: de beste keepers trainen."
+  },
+  "Gallery": {
+    "title": "Krijg toegang tot elk iconisch moment<br></br>van hun avontuur.",
+    "cardTitle": "Meld je aan!",
+    "cardDescription": "Log in om de galerij van het geselecteerde kamp te bekijken.",
+    "selectPlaceholder": "Selecteer een kamp",
+    "selectAnotherPlaceholder": "Selecteer een ander kamp",
+    "passwordPlaceholder": "Voer het wachtwoord in",
+    "passwordLabel": "Wachtwoord",
+    "selectLabel": "Kamp",
+    "buttonSubmit": "Bekijk de foto's!",
+    "successMessage": "Succesvol verbonden.",
+    "errorMessage": "Er is een fout opgetreden, controleer je gegevens.",
+    "privacyNote": "Beveiligde toegang voor ingeschreven begeleiders",
+    "heroClaim": "Hun hoogtepunten"
+  },
+  "Header": {
+    "connect": "Kies een ander album",
+    "toggleNavigation": "Navigatiemenu wisselen"
+  }
 }
