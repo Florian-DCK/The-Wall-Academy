@@ -31,11 +31,11 @@ const Gallery: React.FC<GalleryProps> = ({ galleryID, images }) => {
   const getPriorityState = (rank?: number) =>
     typeof rank === "number" && rank > 0 && rank <= 3;
 
-  const downloadImage = useCallback((url: string) => {
+  const downloadImage = useCallback((url: string, filename: string) => {
     if (!url) return;
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", "");
+    link.setAttribute("download", filename);
     link.setAttribute("target", "_blank");
     link.setAttribute("rel", "noopener");
     document.body.appendChild(link);
@@ -75,7 +75,9 @@ const Gallery: React.FC<GalleryProps> = ({ galleryID, images }) => {
         e.preventDefault();
         e.stopPropagation();
         const src = pswp.currSlide?.data?.src;
-        if (src) downloadImage(src);
+        if (src) {
+          downloadImage(src, "The Wall Academy.png");
+        }
       });
 
       pswp.element?.appendChild(btn);
@@ -136,7 +138,7 @@ const Gallery: React.FC<GalleryProps> = ({ galleryID, images }) => {
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
-                downloadImage(image.largeURL);
+                downloadImage(image.largeURL, "The Wall Academy.png");
               }}
             >
               <svg
