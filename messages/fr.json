@@ -3,6 +3,8 @@
     "title": "mon<br></br>objectif:<br></br>former<br></br>les<br></br><highlight>meilleurs</highlight><br></br><highlight>gardiens</highlight><br></br>de but.",
     "headline1": "Tu veux devenir<br></br>un <highlight>gardien de</highlight><br></br><highlight>but redoutable</highlight><br></br>et briller<br></br>sur le terrain ?",
     "description1": "Rejoins notre Académie et booste<br></br>tes compétences avec nos coachs expérimentés !<br></br>Apprends aux côtés de <strong>Vincent Vanasch</strong> !<br></br>Prêt pour l'excellence ?",
+    "headline2": "rejoins<br></br>nous et<br></br>transforme<br></br>tes skills<br></br>en <highlight>super</highlight><br></br><highlight>pouvoirs</highlight>",
+    "description2": "Des camps tout l'été !<br></br><faded>Blue Lions & Royal Orée<br></br><small>61 Hertswegenstraat, 3080 Tervuren &<br></br>Avenue Edmond Galoppin 1150 Woluwe-Saint-Pierre</small></faded>",
     "CTA": "Je m'inscris",
     "Carousel": {
       "captionSarah": "Vincent Vanasch est le meilleur gardien du monde !<br></br>J'ai eu la chance de participer à son stage<br></br>et j'ai appris des astuces incroyables<br></br>pour bloquer les tirs !<br></br>Maintenant, je suis prêt<br></br>à devenir moi-même un champion !",
@@ -11,6 +13,27 @@
       "captionCamille": "Les entraîneurs etaient vraiment formidables.<br></br>Ils m'ont donne des conseils individuels<br></br>pour ameliorer mes performances.<br></br>Je recommande vivement ce stage<br></br>à tous les gardiens !",
       "captionCeline": "J'ai eu la chance d'avoir des entraîneurs<br></br>qui m'ont appris a bien positionner mon corps,<br></br>à mieux comprendre les angles<br></br>et à mieux anticiper les coups des attaquants !",
       "captionHugo": "J'ai participé au stage de hockey<br></br>spécialement pour les gardiens<br></br>avec Vincent Vanasch et j'ai beaucoup appris !<br></br>Maintenant, je suis le mur de ma petite equipe,<br></br>et mes amis m'appellent \"le mur de briques\"!"
+    },
+    "WhatIs": {
+      "title": "<highlight>the wall</highlight><br></br><highlight>academy</highlight><br></br>c'est<br></br>quoi au<br></br>juste?",
+      "WhatIsItems": {
+        "atelierTitle": "Ateliers Spéciaux",
+        "atelierDescription": "Découvrez les secrets des champions à travers des ateliers spéciaux.",
+        "wallTitle": "The wall",
+        "wallDescription": "Rencontrez Vincent Vanasch et recevez des conseils de la part du champion olympique.",
+        "videoTitle": "Analyses vidéo",
+        "videoDescription": "Profitez de l'expertise des plus grands grâce à nos séances d'analyse vidéo approfondies !",
+        "experienceTitle": "Expérience inoubliable",
+        "experienceDescription": "Vivez une expérience unique en participant à un stage élite organisé par le meilleur gardien du monde.",
+        "smallGroupTitle": "Petits groupes Grande expérience",
+        "smallGroupDescription": "Un nombre limité de gardien permet à chacun de recevoir une attention et un coaching de qualité supérieure.",
+        "staffTitle": "Staff spécialisé",
+        "staffDescription": "Tirez profit d'une équipe expérimentée en entraînement de gardiens, qui vous offrira des conseils techniques pertinents et pointus.",
+        "coachingTitle": "Coaching individuel",
+        "coachingDescription": "Dialoguez avec l'équipe lors de séances de coaching personnalisées consacrées à votre progression.",
+        "concentrationTitle": "Concentration",
+        "concentrationDescription": "Bénéficiez des recommandations pour renforcer votre concentration et votre assurance."
+      }
     }
   },
   "Gallery": {
