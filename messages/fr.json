@@ -34,6 +34,16 @@
         "concentrationTitle": "Concentration",
         "concentrationDescription": "Bénéficiez des recommandations pour renforcer votre concentration et votre assurance."
       }
+    },
+    "Footer": {
+      "title": "mets<br></br>ton<br></br>casque<br></br>tes<br></br>guêtres<br></br>et gants<br></br><highlight>je t'attends</highlight>",
+      "follow": "Suivez-nous :",
+      "social": {
+        "instagram": "Instagram",
+        "facebook": "Facebook",
+        "youtube": "YouTube",
+        "tiktok": "TikTok"
+      }
     }
   },
   "Gallery": {
