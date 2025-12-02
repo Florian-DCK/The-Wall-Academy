@@ -1,299 +1,313 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
 @font-face {
-  font-family: ProximaNova;
-  src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_1_0.eot);
-  src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_1_0.eot?#iefix)
-      format("embedded-opentype"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_1_0.woff2)
-      format("woff2"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_1_0.woff)
-      format("woff"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_1_0.ttf)
-      format("truetype"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_1_0.svg#wf)
-      format("svg");
-  font-weight: 300;
-  font-style: normal;
+	font-family: ProximaNova;
+	src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_1_0.eot);
+	src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_1_0.eot?#iefix)
+			format('embedded-opentype'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_1_0.woff2)
+			format('woff2'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_1_0.woff)
+			format('woff'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_1_0.ttf)
+			format('truetype'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_1_0.svg#wf)
+			format('svg');
+	font-weight: 300;
+	font-style: normal;
 }
 
 @font-face {
-  font-family: ProximaNova;
-  src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_4_0.eot);
-  src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_4_0.eot?#iefix)
-      format("embedded-opentype"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_4_0.woff2)
-      format("woff2"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_4_0.woff)
-      format("woff"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_4_0.ttf)
-      format("truetype"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_4_0.svg#wf)
-      format("svg");
-  font-weight: 400;
-  font-style: normal;
+	font-family: ProximaNova;
+	src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_4_0.eot);
+	src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_4_0.eot?#iefix)
+			format('embedded-opentype'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_4_0.woff2)
+			format('woff2'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_4_0.woff)
+			format('woff'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_4_0.ttf)
+			format('truetype'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_4_0.svg#wf)
+			format('svg');
+	font-weight: 400;
+	font-style: normal;
 }
 
 @font-face {
-  font-family: ProximaNova;
-  src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.eot);
-  src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.eot?#iefix)
-      format("embedded-opentype"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.woff2)
-      format("woff2"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.woff)
-      format("woff"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.ttf)
-      format("truetype"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.svg#wf)
-      format("svg");
-  font-weight: 700;
-  font-style: normal;
+	font-family: ProximaNova;
+	src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.eot);
+	src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.eot?#iefix)
+			format('embedded-opentype'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.woff2)
+			format('woff2'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.woff)
+			format('woff'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.ttf)
+			format('truetype'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.svg#wf)
+			format('svg');
+	font-weight: 700;
+	font-style: normal;
 }
 
 @font-face {
-  font-family: ProximaNova;
-  src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.eot);
-  src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.eot?#iefix)
-      format("embedded-opentype"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.woff2)
-      format("woff2"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.woff)
-      format("woff"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.ttf)
-      format("truetype"),
-    url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.svg#wf)
-      format("svg");
-  font-weight: 900;
-  font-style: normal;
+	font-family: ProximaNova;
+	src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.eot);
+	src: url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.eot?#iefix)
+			format('embedded-opentype'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.woff2)
+			format('woff2'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.woff)
+			format('woff'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.ttf)
+			format('truetype'),
+		url(https://d25purrcgqtc5w.cloudfront.net/dist/fonts/proximanova/302D42_5_0.svg#wf)
+			format('svg');
+	font-weight: 900;
+	font-style: normal;
 }
 @layer base {
-  /* Map Next.js font variables to usable stacks for Tailwind utilities */
-  :root {
-    --font-heading-stack: var(--font-heading), ProximaNova, sans-serif;
-    --font-body-stack: var(--font-body), ProximaNova, sans-serif;
-  }
+	/* Map Next.js font variables to usable stacks for Tailwind utilities */
+	:root {
+		--font-heading-stack: var(--font-heading), ProximaNova, sans-serif;
+		--font-body-stack: var(--font-body), ProximaNova, sans-serif;
+	}
 
-  body {
-    font-family: var(--font-body-stack);
-    font-weight: 400;
-  }
+	body {
+		font-family: var(--font-body-stack);
+		font-weight: 400;
+	}
 
-  .font-heading,
-  h1,
-  h2,
-  h3,
-  [data-font="heading"] {
-    font-family: var(--font-heading-stack);
-  }
+	.font-heading,
+	h1,
+	h2,
+	h3,
+	[data-font='heading'] {
+		font-family: var(--font-heading-stack);
+	}
 }
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) + 4px);
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-destructive: var(--destructive);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+	--color-chart-1: var(--chart-1);
+	--color-chart-2: var(--chart-2);
+	--color-chart-3: var(--chart-3);
+	--color-chart-4: var(--chart-4);
+	--color-chart-5: var(--chart-5);
+	--color-sidebar: var(--sidebar);
+	--color-sidebar-foreground: var(--sidebar-foreground);
+	--color-sidebar-primary: var(--sidebar-primary);
+	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+	--color-sidebar-accent: var(--sidebar-accent);
+	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+	--color-sidebar-border: var(--sidebar-border);
+	--color-sidebar-ring: var(--sidebar-ring);
 }
 
 :root {
-  --radius: 0.5rem;
-  --background: #04070d;
-  --foreground: #fff9f4;
-  --card: #0b0f1a;
-  --card-foreground: #fff9f4;
-  --popover: #0f131f;
-  --popover-foreground: #fff9f4;
-  --primary: rgb(203, 36, 24);
-  --primary-foreground: #fff3ea;
-  --secondary: rgb(231, 144, 53);
-  --secondary-foreground: #1a0d05;
-  --muted: #151a2a;
-  --muted-foreground: #c7cad8;
-  --accent: #ffecd6;
-  --accent-foreground: #150903;
-  --destructive: #ff3b30;
-  --border: #272b3b;
-  --input: #1a1f30;
-  --ring: #f15a24;
-  --chart-1: #f15a24;
-  --chart-2: #fbb13c;
-  --chart-3: #f99072;
-  --chart-4: #ff7a00;
-  --chart-5: #ffd166;
-  --sidebar: #05070d;
-  --sidebar-foreground: #fff9f4;
-  --sidebar-primary: #f15a24;
-  --sidebar-primary-foreground: #fff3ea;
-  --sidebar-accent: #151a2a;
-  --sidebar-accent-foreground: #fff9f4;
-  --sidebar-border: #272b3b;
-  --sidebar-ring: #f15a24;
+	--radius: 0.5rem;
+	--background: #04070d;
+	--foreground: #fff9f4;
+	--card: #0b0f1a;
+	--card-foreground: #fff9f4;
+	--popover: #0f131f;
+	--popover-foreground: #fff9f4;
+	--primary: rgb(203, 36, 24);
+	--primary-foreground: #fff3ea;
+	--secondary: rgb(231, 144, 53);
+	--secondary-foreground: #1a0d05;
+	--muted: #151a2a;
+	--muted-foreground: #c7cad8;
+	--accent: #ffecd6;
+	--accent-foreground: #150903;
+	--destructive: #ff3b30;
+	--border: #272b3b;
+	--input: #1a1f30;
+	--ring: #f15a24;
+	--chart-1: #f15a24;
+	--chart-2: #fbb13c;
+	--chart-3: #f99072;
+	--chart-4: #ff7a00;
+	--chart-5: #ffd166;
+	--sidebar: #05070d;
+	--sidebar-foreground: #fff9f4;
+	--sidebar-primary: #f15a24;
+	--sidebar-primary-foreground: #fff3ea;
+	--sidebar-accent: #151a2a;
+	--sidebar-accent-foreground: #fff9f4;
+	--sidebar-border: #272b3b;
+	--sidebar-ring: #f15a24;
 }
 
 * {
-  cursor: crosshair;
+	cursor: crosshair;
 }
 
 .dark {
-  --background: #fff9f4;
-  --foreground: #04070d;
-  --card: #fff9f4;
-  --card-foreground: #04070d;
-  --popover: #fff9f4;
-  --popover-foreground: #04070d;
-  --primary: #f15a24;
-  --primary-foreground: #04070d;
-  --secondary: #ffd166;
-  --secondary-foreground: #1a0d05;
-  --muted: #e8e9f1;
-  --muted-foreground: #151a2a;
-  --accent: #ffecd6;
-  --accent-foreground: #1a0d05;
-  --destructive: #ff4b4b;
-  --border: rgba(4, 7, 13, 0.15);
-  --input: rgba(4, 7, 13, 0.2);
-  --ring: #f15a24;
-  --chart-1: #f15a24;
-  --chart-2: #fbb13c;
-  --chart-3: #f99072;
-  --chart-4: #ff7a00;
-  --chart-5: #ffd166;
-  --sidebar: #fff9f4;
-  --sidebar-foreground: #04070d;
-  --sidebar-primary: #f15a24;
-  --sidebar-primary-foreground: #04070d;
-  --sidebar-accent: #ffd166;
-  --sidebar-accent-foreground: #1a0d05;
-  --sidebar-border: rgba(4, 7, 13, 0.12);
-  --sidebar-ring: #f15a24;
+	--background: #fff9f4;
+	--foreground: #04070d;
+	--card: #fff9f4;
+	--card-foreground: #04070d;
+	--popover: #fff9f4;
+	--popover-foreground: #04070d;
+	--primary: #f15a24;
+	--primary-foreground: #04070d;
+	--secondary: #ffd166;
+	--secondary-foreground: #1a0d05;
+	--muted: #e8e9f1;
+	--muted-foreground: #151a2a;
+	--accent: #ffecd6;
+	--accent-foreground: #1a0d05;
+	--destructive: #ff4b4b;
+	--border: rgba(4, 7, 13, 0.15);
+	--input: rgba(4, 7, 13, 0.2);
+	--ring: #f15a24;
+	--chart-1: #f15a24;
+	--chart-2: #fbb13c;
+	--chart-3: #f99072;
+	--chart-4: #ff7a00;
+	--chart-5: #ffd166;
+	--sidebar: #fff9f4;
+	--sidebar-foreground: #04070d;
+	--sidebar-primary: #f15a24;
+	--sidebar-primary-foreground: #04070d;
+	--sidebar-accent: #ffd166;
+	--sidebar-accent-foreground: #1a0d05;
+	--sidebar-border: rgba(4, 7, 13, 0.12);
+	--sidebar-ring: #f15a24;
 }
-
 
 .embla {
-    max-width: 55rem;
-    margin: auto;
-    --slide-height: 19rem;
-    --slide-spacing: 1rem;
-    --slide-size: 30%;
+	margin: auto;
+	width: min(90vw, 72rem);
+	--slide-height: 19rem;
+	--slide-spacing: 0.5rem;
+	--slide-size: calc((100% - var(--slide-spacing) * 2) / 3);
 }
 .embla__viewport {
-    overflow: hidden;
+	overflow: hidden;
 }
 .embla__container {
-    display: flex;
-    touch-action: pan-y pinch-zoom;
-    margin-left: calc(var(--slide-spacing) * -1);
+	display: flex;
+	touch-action: pan-y pinch-zoom;
+	gap: var(--slide-spacing);
 }
 .embla__slide {
-    transform: translate3d(0, 0, 0);
-    flex: 0 0 var(--slide-size);
-    min-width: 0;
-    border: 1px solid black;
+	transform: translate3d(0, 0, 0);
+	flex: 0 0 var(--slide-size);
+	min-width: var(--slide-size);
+	max-width: var(--slide-size);
+	opacity: 0.25;
 }
-.embla__slide__number {
-    box-shadow: inset 0 0 0 0.2rem var(--detail-medium-contrast);
-    border-radius: 1.8rem;
-    font-size: 4rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: var(--slide-height);
-    user-select: none;
+.embla__slide:not(.is-active) .embla__slide__content {
+	filter: grayscale(0.6) brightness(1.25);
+	/* transform: scale(0.75); */
+}
+.embla__slide.is-active {
+	opacity: 1;
+	transform: scale(1.02);
+}
+.embla__slide.is-active .embla__slide__content {
+	filter: none;
+}
+.embla__slide__content {
+	width: 100%;
+	height: 100%;
 }
 .embla__controls {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    justify-content: space-between;
-    gap: 1.2rem;
-    margin-top: 1.8rem;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	justify-content: space-between;
+	gap: 1.2rem;
+	margin-top: 1.8rem;
 }
 .embla__buttons {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.6rem;
-    align-items: center;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 0.6rem;
+	align-items: center;
 }
 .embla__button {
-    -webkit-tap-highlight-color: rgba(var(--text-high-contrast-rgb-value), 0.5);
-    -webkit-appearance: none;
-    appearance: none;
-    background-color: transparent;
-    touch-action: manipulation;
-    display: inline-flex;
-    text-decoration: none;
-    cursor: pointer;
-    border: 0;
-    padding: 0;
-    margin: 0;
-    box-shadow: inset 0 0 0 0.2rem var(--detail-medium-contrast);
-    width: 3.6rem;
-    height: 3.6rem;
-    z-index: 1;
-    border-radius: 50%;
-    color: var(--text-body);
-    align-items: center;
-    justify-content: center;
-    line-height: 0; /* évite l'espace blanc lié à l'alignement inline */
-}
-.embla__button:disabled {
-    color: var(--detail-high-contrast);
+	-webkit-appearance: none;
+	appearance: none;
+	background-color: transparent;
+	touch-action: manipulation;
+	display: inline-flex;
+	text-decoration: none;
+	cursor: pointer;
+	border: 0;
+	padding: 0;
+	margin: 0;
+	width: 3.6rem;
+	height: 3.6rem;
+	z-index: 1;
+	border-radius: 50%;
+	align-items: center;
+	justify-content: center;
+	line-height: 0; /* évite l'espace blanc lié à l'alignement inline */
 }
 .embla__button__svg {
-    width: 35%;
-    height: 35%;
-    display: block; /* s'assure qu'il n'y a pas d'espace blanc baseline */
+	width: 35%;
+	height: 35%;
+	display: block; /* s'assure qu'il n'y a pas d'espace blanc baseline */
 }
 /* recentre le path à l'intérieur du svg si le viewBox contient de l'espace vide */
 .embla__button__svg path {
-    transform-box: fill-box;
-    transform-origin: center;
-    transform: translateX(8%);
+	transform-box: fill-box;
+	transform-origin: center;
+	transform: translateX(8%);
+}
+
+@media (max-width: 1024px) {
+	.embla {
+		--slide-size: calc((100% - var(--slide-spacing)) / 2);
+		--slide-spacing: 0.75rem;
+		width: 100%;
+	}
+}
+
+@media (max-width: 640px) {
+	.embla {
+		--slide-size: 100%;
+		--slide-spacing: 1rem;
+		width: 100%;
+	}
 }
 
 .highlight {
-  background: linear-gradient(to right, var(--secondary), var(--primary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+	background: linear-gradient(to right, var(--secondary), var(--primary));
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	color: transparent;
 }
 
 .icon-gradient {
-  /* filter: hue-rotate(0deg) saturate(1.5); */
-  color: var(--primary); /* couleur de base */
+	/* filter: hue-rotate(0deg) saturate(1.5); */
+	color: var(--primary); /* couleur de base */
 }

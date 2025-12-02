@@ -1,46 +1,109 @@
-import React from 'react'
-import { EmblaOptionsType } from 'embla-carousel'
+import React, { useEffect, useMemo, useState } from 'react';
+import { EmblaOptionsType } from 'embla-carousel';
 import {
-    PrevButton,
-    NextButton,
-    usePrevNextButtons
-} from './CarouselArrowButton'
-import useEmblaCarousel from 'embla-carousel-react'
+	PrevButton,
+	NextButton,
+	usePrevNextButtons,
+} from './CarouselArrowButton';
+import useEmblaCarousel from 'embla-carousel-react';
 
 type PropType = {
-    slides: number[]
-    options?: EmblaOptionsType
-}
+	// new: items can be an array of React nodes (e.g. <Testimony />)
+	items?: React.ReactNode[];
+	// backward compat: still accept slides (numbers)
+	slides?: number[];
+	options?: EmblaOptionsType;
+};
 
 const Carousel: React.FC<PropType> = (props) => {
-    const { slides, options } = props
-    const [emblaRef, emblaApi] = useEmblaCarousel(options)
+	const { items, slides, options } = props;
+	const [emblaRef, emblaApi] = useEmblaCarousel(options);
+	const [selectedIndex, setSelectedIndex] = useState(0);
+	const [isMobile, setIsMobile] = useState(false);
+	const totalSlides = useMemo(
+		() => items?.length ?? slides?.length ?? 0,
+		[items?.length, slides?.length]
+	);
+	const highlightedIndex = useMemo(() => {
+		if (!totalSlides) return 0;
+		if (isMobile) return selectedIndex;
+		return (selectedIndex + 1) % totalSlides;
+	}, [selectedIndex, totalSlides, isMobile]);
 
+	useEffect(() => {
+		const updateIsMobile = () => {
+			if (typeof window === 'undefined') return;
+			setIsMobile(window.matchMedia('(max-width: 768px)').matches);
+		};
 
-    const {
-        prevBtnDisabled,
-        nextBtnDisabled,
-        onPrevButtonClick,
-        onNextButtonClick
-    } = usePrevNextButtons(emblaApi)
+		updateIsMobile();
+		window.addEventListener('resize', updateIsMobile);
+		return () => {
+			window.removeEventListener('resize', updateIsMobile);
+		};
+	}, []);
 
-    return (
-        <section className="embla relative w-6xl">
-            <div className="embla__viewport" ref={emblaRef}>
-                <div className="embla__container">
-                    {slides.map((index) => (
-                        <div className="embla__slide mx-5" key={index}>
-                            <div className="embla__slide__number">{index + 1}</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+	const {
+		prevBtnDisabled,
+		nextBtnDisabled,
+		onPrevButtonClick,
+		onNextButtonClick,
+	} = usePrevNextButtons(emblaApi);
 
-            <PrevButton className={'absolute left-0 transform -translate-y-1/2 top-1/2'} onClick={onPrevButtonClick} disabled={prevBtnDisabled} />
-            <NextButton className={' border absolute right-0 transform -translate-y-1/2 top-1/2'} onClick={onNextButtonClick} disabled={nextBtnDisabled} />
-        </section>
-    )
-}
+	useEffect(() => {
+		if (!emblaApi) return;
 
-export default Carousel
-export { Carousel }
+		const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
+
+		onSelect();
+		emblaApi.on('select', onSelect);
+
+		return () => {
+			emblaApi.off('select', onSelect);
+		};
+	}, [emblaApi]);
+
+	return (
+		<section className="embla relative w-full">
+			<div className="embla__viewport" ref={emblaRef}>
+				<div className="embla__container">
+					{items
+						? items.map((node, idx) => (
+								<div
+									className={`embla__slide mx-5 ${
+										totalSlides && idx === highlightedIndex ? 'is-active' : ''
+									}`}
+									key={idx}>
+									<div className="embla__slide__content">{node}</div>
+								</div>
+						  ))
+						: (slides || []).map((index, idx) => (
+								<div
+									className={`embla__slide mx-5 ${
+										totalSlides && idx === highlightedIndex ? 'is-active' : ''
+									}`}
+									key={index}>
+									<div className="embla__slide__number">{index + 1}</div>
+								</div>
+						  ))}
+				</div>
+			</div>
+
+			<PrevButton
+				className={'absolute left-0 transform -translate-y-1/2 top-1/2'}
+				onClick={onPrevButtonClick}
+				disabled={prevBtnDisabled}
+			/>
+			<NextButton
+				className={
+					' border absolute right-0 transform -translate-y-1/2 top-1/2'
+				}
+				onClick={onNextButtonClick}
+				disabled={nextBtnDisabled}
+			/>
+		</section>
+	);
+};
+
+export default Carousel;
+export { Carousel };
