@@ -151,8 +151,7 @@ async function createGalleryAction(
     typeof folder === "string" && folder.trim()
       ? sanitizeSegment(folder.trim())
       : baseSegment;
-  const initialSegment =
-    folderSegment || `galerie-${randomUUID().slice(0, 8)}`;
+  const initialSegment = folderSegment || `galerie-${randomUUID().slice(0, 8)}`;
 
   await fs.mkdir(GALLERIES_BASE, { recursive: true });
 

@@ -42,12 +42,9 @@ export default async function middleware(req: NextRequest) {
     );
   const isGalleryLanding =
     Array.isArray(locales) &&
-    locales.some(
-      (l) =>
-        path === `/${l}/gallery` ||
-        path === `/${l}/gallery/`
-    );
-  const isPublicRoute = isLocaleRoot || isRoot || isAdminRoute || isGalleryLanding;
+    locales.some((l) => path === `/${l}/gallery` || path === `/${l}/gallery/`);
+  const isPublicRoute =
+    isLocaleRoot || isRoot || isAdminRoute || isGalleryLanding;
   const isProtectedRoute = !isPublicRoute;
 
   const cookie = req.cookies.get("session")?.value ?? null;

@@ -28,7 +28,11 @@ const signImageAccess = (galleryId: number, fileName: string) => {
   return hmac.digest("base64url");
 };
 
-const buildImageUrl = (galleryId: number, fileName: string, signature: string) =>
+const buildImageUrl = (
+  galleryId: number,
+  fileName: string,
+  signature: string
+) =>
   `/api/images?galleryId=${galleryId}&file=${encodeURIComponent(
     fileName
   )}&sig=${signature}`;
@@ -154,7 +158,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ data: [] }, { status: 200 });
   }
 
-  const images = await listGalleryImages(galleryRecord.id, normalizedFolderPath);
+  const images = await listGalleryImages(
+    galleryRecord.id,
+    normalizedFolderPath
+  );
 
   return NextResponse.json(
     {
@@ -175,10 +182,7 @@ export async function DELETE(request: NextRequest) {
   try {
     payload = await request.json();
   } catch {
-    return NextResponse.json(
-      { message: "Requête invalide." },
-      { status: 400 }
-    );
+    return NextResponse.json({ message: "Requête invalide." }, { status: 400 });
   }
 
   const galleryId = Number(payload.galleryId);

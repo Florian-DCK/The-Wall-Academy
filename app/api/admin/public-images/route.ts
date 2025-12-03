@@ -185,9 +185,7 @@ const listPublicImages = async (
       continue;
     }
 
-    const relativePath = relativeDir
-      ? `${relativeDir}/${fileName}`
-      : fileName;
+    const relativePath = relativeDir ? `${relativeDir}/${fileName}` : fileName;
     const url = `/${encodePathSegments(relativePath)}`;
 
     images.push({
@@ -269,10 +267,7 @@ export async function DELETE(request: NextRequest) {
   try {
     payload = await request.json();
   } catch {
-    return NextResponse.json(
-      { message: "Requête invalide." },
-      { status: 400 }
-    );
+    return NextResponse.json({ message: "Requête invalide." }, { status: 400 });
   }
 
   const dirValue = typeof payload.dir === "string" ? payload.dir : "";

@@ -54,7 +54,11 @@ type PublicImageAsset = {
   directory: string;
 };
 
-type AdminPanelKey = "translations" | "galleries" | "public-images" | "carousel";
+type AdminPanelKey =
+  | "translations"
+  | "galleries"
+  | "public-images"
+  | "carousel";
 
 type AdminPanelDefinition = {
   key: AdminPanelKey;
@@ -62,7 +66,10 @@ type AdminPanelDefinition = {
   description: string;
 };
 
-type ActionHandler = (state: FormState, formData: FormData) => Promise<FormState>;
+type ActionHandler = (
+  state: FormState,
+  formData: FormData
+) => Promise<FormState>;
 
 type AdminDashboardProps = {
   locale: string;
@@ -165,7 +172,8 @@ const formatFileSize = (size: number) => {
     index += 1;
   }
 
-  const formatted = value >= 10 || index === 0 ? value.toFixed(0) : value.toFixed(1);
+  const formatted =
+    value >= 10 || index === 0 ? value.toFixed(0) : value.toFixed(1);
   return `${formatted.replace(/\.0$/, "")} ${units[index]}`;
 };
 
@@ -189,23 +197,44 @@ export default function AdminDashboard(props: AdminDashboardProps) {
   } = props;
 
   const router = useRouter();
-  const normalizedDefaultPublicDir = normalizeDirectoryValue(publicUploadsDefault);
+  const normalizedDefaultPublicDir =
+    normalizeDirectoryValue(publicUploadsDefault);
 
   const createGalleryFormRef = useRef<HTMLFormElement>(null);
   const galleryUploadFormRef = useRef<HTMLFormElement>(null);
   const publicUploadFormRef = useRef<HTMLFormElement>(null);
 
-  const [translationState, translationAction] = useActionState(updateTranslation, initialFormState);
-  const [carouselState, carouselAction] = useActionState(upsertCarouselItem, initialFormState);
-  const [deleteState, deleteAction] = useActionState(deleteCarouselItem, initialFormState);
-  const [createGalleryState, createGalleryAction] = useActionState(createGallery, initialFormState);
-  const [galleryUploadState, galleryUploadAction] = useActionState(uploadGalleryImages, initialFormState);
-  const [publicUploadState, publicUploadAction] = useActionState(uploadPublicImages, initialFormState);
+  const [translationState, translationAction] = useActionState(
+    updateTranslation,
+    initialFormState
+  );
+  const [carouselState, carouselAction] = useActionState(
+    upsertCarouselItem,
+    initialFormState
+  );
+  const [deleteState, deleteAction] = useActionState(
+    deleteCarouselItem,
+    initialFormState
+  );
+  const [createGalleryState, createGalleryAction] = useActionState(
+    createGallery,
+    initialFormState
+  );
+  const [galleryUploadState, galleryUploadAction] = useActionState(
+    uploadGalleryImages,
+    initialFormState
+  );
+  const [publicUploadState, publicUploadAction] = useActionState(
+    uploadPublicImages,
+    initialFormState
+  );
 
   const [activePanel, setActivePanel] = useState<AdminPanelKey>("translations");
 
   const [filter, setFilter] = useState("");
-  const [selectedKey, setSelectedKey] = useState(() => translations[0]?.key ?? "");
+  const [selectedKey, setSelectedKey] = useState(
+    () => translations[0]?.key ?? ""
+  );
   const [keyInput, setKeyInput] = useState(() => translations[0]?.key ?? "");
   const [valuesInput, setValuesInput] = useState<Record<string, string>>(() =>
     buildValuesMap(locales, translations[0])
@@ -221,7 +250,9 @@ export default function AdminDashboard(props: AdminDashboardProps) {
     if (!query) {
       return translations;
     }
-    return translations.filter((entry) => entry.key.toLowerCase().includes(query));
+    return translations.filter((entry) =>
+      entry.key.toLowerCase().includes(query)
+    );
   }, [filter, translations]);
 
   const buildValuesFromEntry = useCallback(
@@ -254,9 +285,12 @@ export default function AdminDashboard(props: AdminDashboardProps) {
     setValuesInput(buildValuesFromEntry(entry));
   }, [selectedKey, translationsMap, buildValuesFromEntry]);
 
-  const handleValueChange = useCallback((localeCode: string, nextValue: string) => {
-    setValuesInput((previous) => ({ ...previous, [localeCode]: nextValue }));
-  }, []);
+  const handleValueChange = useCallback(
+    (localeCode: string, nextValue: string) => {
+      setValuesInput((previous) => ({ ...previous, [localeCode]: nextValue }));
+    },
+    []
+  );
 
   const handleNewEntry = useCallback(() => {
     setSelectedKey("");
@@ -269,70 +303,80 @@ export default function AdminDashboard(props: AdminDashboardProps) {
     galleries[0]?.id ? String(galleries[0].id) : ""
   );
   const [galleryImages, setGalleryImages] = useState<GalleryImageAsset[]>([]);
-  const [galleryImagesError, setGalleryImagesError] = useState<string | null>(null);
+  const [galleryImagesError, setGalleryImagesError] = useState<string | null>(
+    null
+  );
   const [isLoadingGalleryImages, setIsLoadingGalleryImages] = useState(false);
 
-  const [selectedPublicDir, setSelectedPublicDir] = useState<string>(() => normalizedDefaultPublicDir);
-  const [publicDirectoryOptions, setPublicDirectoryOptions] = useState<string[]>(() =>
-    buildDirectoryOptions([], normalizedDefaultPublicDir)
+  const [selectedPublicDir, setSelectedPublicDir] = useState<string>(
+    () => normalizedDefaultPublicDir
   );
+  const [publicDirectoryOptions, setPublicDirectoryOptions] = useState<
+    string[]
+  >(() => buildDirectoryOptions([], normalizedDefaultPublicDir));
   const [publicImages, setPublicImages] = useState<PublicImageAsset[]>([]);
-  const [publicImagesError, setPublicImagesError] = useState<string | null>(null);
+  const [publicImagesError, setPublicImagesError] = useState<string | null>(
+    null
+  );
   const [isLoadingPublicImages, setIsLoadingPublicImages] = useState(false);
 
-  const [deleteImageState, setDeleteImageState] = useState<FormState | null>(null);
+  const [deleteImageState, setDeleteImageState] = useState<FormState | null>(
+    null
+  );
   const [isDeletingImage, setIsDeletingImage] = useState<string | null>(null);
-  const [deletePublicImageState, setDeletePublicImageState] = useState<FormState | null>(null);
-  const [isDeletingPublicImage, setIsDeletingPublicImage] = useState<string | null>(null);
+  const [deletePublicImageState, setDeletePublicImageState] =
+    useState<FormState | null>(null);
+  const [isDeletingPublicImage, setIsDeletingPublicImage] = useState<
+    string | null
+  >(null);
 
   const dateFormatter = useMemo(
     () => new Intl.DateTimeFormat(locale, { dateStyle: "medium" }),
     [locale]
   );
 
-  const loadGalleryImages = useCallback(
-    async (galleryId: string) => {
-      if (!galleryId) {
+  const loadGalleryImages = useCallback(async (galleryId: string) => {
+    if (!galleryId) {
+      setGalleryImages([]);
+      setGalleryImagesError(null);
+      return;
+    }
+
+    setIsLoadingGalleryImages(true);
+    setGalleryImagesError(null);
+
+    try {
+      const response = await fetch(
+        `/api/admin/gallery-images?galleryId=${encodeURIComponent(galleryId)}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      const payload = (await response
+        .json()
+        .catch(() => null)) as GalleryImagesResponse | null;
+
+      if (!response.ok) {
+        const message =
+          typeof payload?.message === "string"
+            ? payload.message
+            : "Impossible de récupérer les images de la galerie.";
         setGalleryImages([]);
-        setGalleryImagesError(null);
+        setGalleryImagesError(message);
         return;
       }
 
-      setIsLoadingGalleryImages(true);
-      setGalleryImagesError(null);
-
-      try {
-        const response = await fetch(
-          `/api/admin/gallery-images?galleryId=${encodeURIComponent(galleryId)}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-
-        const payload = (await response.json().catch(() => null)) as GalleryImagesResponse | null;
-
-        if (!response.ok) {
-          const message =
-            typeof payload?.message === "string"
-              ? payload.message
-              : "Impossible de récupérer les images de la galerie.";
-          setGalleryImages([]);
-          setGalleryImagesError(message);
-          return;
-        }
-
-        setGalleryImages(Array.isArray(payload?.data) ? payload!.data : []);
-      } catch (error) {
-        console.error("loadGalleryImages", error);
-        setGalleryImages([]);
-        setGalleryImagesError("Impossible de charger les images.");
-      } finally {
-        setIsLoadingGalleryImages(false);
-      }
-    },
-    []
-  );
+      setGalleryImages(Array.isArray(payload?.data) ? payload!.data : []);
+    } catch (error) {
+      console.error("loadGalleryImages", error);
+      setGalleryImages([]);
+      setGalleryImagesError("Impossible de charger les images.");
+    } finally {
+      setIsLoadingGalleryImages(false);
+    }
+  }, []);
 
   const loadPublicImages = useCallback(
     async (directory: string) => {
@@ -347,14 +391,18 @@ export default function AdminDashboard(props: AdminDashboardProps) {
 
       try {
         const response = await fetch(
-          `/api/admin/public-images${params.size ? `?${params.toString()}` : ""}`,
+          `/api/admin/public-images${
+            params.size ? `?${params.toString()}` : ""
+          }`,
           {
             method: "GET",
             credentials: "include",
           }
         );
 
-        const payload = (await response.json().catch(() => null)) as PublicImagesResponse | null;
+        const payload = (await response
+          .json()
+          .catch(() => null)) as PublicImagesResponse | null;
 
         if (!response.ok) {
           const message =
@@ -370,7 +418,10 @@ export default function AdminDashboard(props: AdminDashboardProps) {
 
         if (Array.isArray(payload?.directories)) {
           setPublicDirectoryOptions(
-            buildDirectoryOptions(payload.directories, normalizedDefaultPublicDir)
+            buildDirectoryOptions(
+              payload.directories,
+              normalizedDefaultPublicDir
+            )
           );
         }
       } catch (error) {
@@ -387,7 +438,9 @@ export default function AdminDashboard(props: AdminDashboardProps) {
   const formatPublicDirectoryLabel = useCallback(
     (dir: string) => {
       const normalized = normalizeDirectoryValue(dir);
-      return normalized ? `${publicRootLabel}/${normalized}` : `${publicRootLabel} (racine)`;
+      return normalized
+        ? `${publicRootLabel}/${normalized}`
+        : `${publicRootLabel} (racine)`;
     },
     [publicRootLabel]
   );
@@ -442,9 +495,9 @@ export default function AdminDashboard(props: AdminDashboardProps) {
           }),
         });
 
-        const payload = (await response.json().catch(() => null)) as
-          | { message?: string }
-          | null;
+        const payload = (await response.json().catch(() => null)) as {
+          message?: string;
+        } | null;
 
         if (!response.ok) {
           const message =
@@ -488,9 +541,9 @@ export default function AdminDashboard(props: AdminDashboardProps) {
           }),
         });
 
-        const payload = (await response.json().catch(() => null)) as
-          | { message?: string }
-          | null;
+        const payload = (await response.json().catch(() => null)) as {
+          message?: string;
+        } | null;
 
         if (!response.ok) {
           const message =
@@ -555,7 +608,12 @@ export default function AdminDashboard(props: AdminDashboardProps) {
       }
       router.refresh();
     }
-  }, [galleryUploadState?.success, router, selectedGalleryId, loadGalleryImages]);
+  }, [
+    galleryUploadState?.success,
+    router,
+    selectedGalleryId,
+    loadGalleryImages,
+  ]);
 
   useEffect(() => {
     if (publicUploadState?.success) {
@@ -608,7 +666,10 @@ export default function AdminDashboard(props: AdminDashboardProps) {
               size={12}
               className="h-full w-full cursor-pointer bg-transparent p-2 text-left text-sm focus:outline-none"
             >
-              <option value={NEW_TRANSLATION_OPTION} className="bg-black text-white/70">
+              <option
+                value={NEW_TRANSLATION_OPTION}
+                className="bg-black text-white/70"
+              >
                 ➕ Nouvelle clé
               </option>
               {filteredTranslations.map((entry) => {
@@ -667,12 +728,17 @@ export default function AdminDashboard(props: AdminDashboardProps) {
           <input type="hidden" name="originalKey" value={selectedKey} />
           <div className="grid gap-3 md:grid-cols-3">
             {locales.map((code) => (
-              <label key={code} className="flex flex-col gap-2 text-sm font-medium">
+              <label
+                key={code}
+                className="flex flex-col gap-2 text-sm font-medium"
+              >
                 {code.toUpperCase()}
                 <textarea
                   name={`value_${code}`}
                   value={valuesInput[code] ?? ""}
-                  onChange={(event) => handleValueChange(code, event.target.value)}
+                  onChange={(event) =>
+                    handleValueChange(code, event.target.value)
+                  }
                   rows={4}
                   className="min-h-32 rounded-lg border border-white/15 bg-black/60 px-3 py-2 text-sm focus:border-primary focus:outline-none"
                   required
@@ -702,7 +768,11 @@ export default function AdminDashboard(props: AdminDashboardProps) {
         <header className="flex flex-col gap-2">
           <h2 className="text-xl font-semibold">Albums de la galerie</h2>
           <p className="text-sm text-white/70">
-            Les dossiers sont gérés sous <code className="font-mono text-xs text-white/80">{galleryRootLabel}</code>.
+            Les dossiers sont gérés sous{" "}
+            <code className="font-mono text-xs text-white/80">
+              {galleryRootLabel}
+            </code>
+            .
           </p>
         </header>
         <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
@@ -720,15 +790,22 @@ export default function AdminDashboard(props: AdminDashboardProps) {
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex flex-col gap-1">
-                            <p className="text-base font-semibold text-white">{gallery.title}</p>
+                            <p className="text-base font-semibold text-white">
+                              {gallery.title}
+                            </p>
                             <p className="text-xs text-white/60">
-                              Créée le {dateFormatter.format(new Date(gallery.createdAt))}
+                              Créée le{" "}
+                              {dateFormatter.format(
+                                new Date(gallery.createdAt)
+                              )}
                               {eventDate ? ` • ${eventDate}` : ""}
                             </p>
                             <p
-                              className={`text-xs ${hasFolder ? "text-white/60" : "text-amber-300"}`}
+                              className={`text-xs ${
+                                hasFolder ? "text-white/60" : "text-amber-300"
+                              }`}
                             >
-                              Dossier : {" "}
+                              Dossier :{" "}
                               {hasFolder ? (
                                 <code className="font-mono text-[0.75rem] text-white/80">
                                   {gallery.photosPath}
@@ -738,14 +815,18 @@ export default function AdminDashboard(props: AdminDashboardProps) {
                               )}
                             </p>
                           </div>
-                          <span className="text-xs font-mono text-white/50">#{gallery.id}</span>
+                          <span className="text-xs font-mono text-white/50">
+                            #{gallery.id}
+                          </span>
                         </div>
                       </li>
                     );
                   })}
                 </ul>
               ) : (
-                <p className="text-sm text-white/60">Aucune galerie enregistrée pour le moment.</p>
+                <p className="text-sm text-white/60">
+                  Aucune galerie enregistrée pour le moment.
+                </p>
               )}
             </div>
           </div>
@@ -789,7 +870,8 @@ export default function AdminDashboard(props: AdminDashboardProps) {
                 className="rounded-lg border border-white/15 bg-black/60 px-3 py-2 text-sm focus:border-primary focus:outline-none"
               />
               <span className="text-xs text-white/60">
-                Utilise lettres, chiffres ou tirets. Laisser vide pour générer automatiquement.
+                Utilise lettres, chiffres ou tirets. Laisser vide pour générer
+                automatiquement.
               </span>
             </label>
             {createGalleryState?.error ? (
@@ -811,7 +893,8 @@ export default function AdminDashboard(props: AdminDashboardProps) {
         <header className="flex flex-col gap-2">
           <h2 className="text-xl font-semibold">Importer dans une galerie</h2>
           <p className="text-sm text-white/70">
-            Ajoutez des images directement dans le dossier de l'album sélectionné.
+            Ajoutez des images directement dans le dossier de l'album
+            sélectionné.
           </p>
         </header>
         <form
@@ -871,8 +954,8 @@ export default function AdminDashboard(props: AdminDashboardProps) {
         <header className="flex flex-col gap-2">
           <h2 className="text-xl font-semibold">Contenu de la galerie</h2>
           <p className="text-sm text-white/70">
-            Visualisez les images présentes dans l'album sélectionné et supprimez celles
-            qui ne sont plus nécessaires.
+            Visualisez les images présentes dans l'album sélectionné et
+            supprimez celles qui ne sont plus nécessaires.
           </p>
         </header>
 
@@ -921,7 +1004,8 @@ export default function AdminDashboard(props: AdminDashboardProps) {
                       {asset.file}
                     </span>
                     <span>
-                      {asset.width} × {asset.height} • {formatFileSize(asset.size)}
+                      {asset.width} × {asset.height} •{" "}
+                      {formatFileSize(asset.size)}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -939,14 +1023,18 @@ export default function AdminDashboard(props: AdminDashboardProps) {
                       disabled={isDeletingImage === asset.file}
                       className="rounded-lg border border-red-500/60 px-3 py-2 text-xs font-semibold text-red-300 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      {isDeletingImage === asset.file ? "Suppression…" : "Supprimer"}
+                      {isDeletingImage === asset.file
+                        ? "Suppression…"
+                        : "Supprimer"}
                     </button>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-sm text-white/60">Aucun fichier dans cet album pour le moment.</p>
+            <p className="text-sm text-white/60">
+              Aucun fichier dans cet album pour le moment.
+            </p>
           )}
         </div>
       </section>
@@ -959,7 +1047,11 @@ export default function AdminDashboard(props: AdminDashboardProps) {
         <h2 className="text-xl font-semibold">Images publiques</h2>
         <p className="text-sm text-white/70">
           Déposez des visuels utilisables sur l'accueil ou d'autres pages. Les
-          fichiers sont copiés dans <code className="font-mono text-xs text-white/80">{publicRootLabel}</code>.
+          fichiers sont copiés dans{" "}
+          <code className="font-mono text-xs text-white/80">
+            {publicRootLabel}
+          </code>
+          .
         </p>
       </header>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
@@ -1011,7 +1103,11 @@ export default function AdminDashboard(props: AdminDashboardProps) {
               Dossier
               <select
                 value={selectedPublicDir}
-                onChange={(event) => setSelectedPublicDir(normalizeDirectoryValue(event.target.value))}
+                onChange={(event) =>
+                  setSelectedPublicDir(
+                    normalizeDirectoryValue(event.target.value)
+                  )
+                }
                 className="rounded-lg border border-white/15 bg-black/60 px-3 py-2 text-sm focus:border-primary focus:outline-none"
               >
                 {publicDirectoryOptions.map((dirOption) => (
@@ -1048,7 +1144,10 @@ export default function AdminDashboard(props: AdminDashboardProps) {
           ) : null}
 
           <p className="text-xs text-white/60">
-            Chemin courant : <code className="font-mono text-[0.75rem] text-white/80">{formatPublicDirectoryLabel(selectedPublicDir)}</code>
+            Chemin courant :{" "}
+            <code className="font-mono text-[0.75rem] text-white/80">
+              {formatPublicDirectoryLabel(selectedPublicDir)}
+            </code>
           </p>
 
           <div className="min-h-40 rounded-lg border border-white/10 bg-black/30 p-4">
@@ -1059,7 +1158,9 @@ export default function AdminDashboard(props: AdminDashboardProps) {
             ) : publicImages.length ? (
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {publicImages.map((asset) => {
-                  const deletionKey = `${asset.directory || "/"}::${asset.file}`;
+                  const deletionKey = `${asset.directory || "/"}::${
+                    asset.file
+                  }`;
                   return (
                     <div
                       key={`${asset.directory}/${asset.file}`}
@@ -1078,7 +1179,8 @@ export default function AdminDashboard(props: AdminDashboardProps) {
                           {asset.file}
                         </span>
                         <span>
-                          {asset.width} × {asset.height} • {formatFileSize(asset.size)}
+                          {asset.width} × {asset.height} •{" "}
+                          {formatFileSize(asset.size)}
                         </span>
                         <span className="text-[0.7rem] text-white/50">
                           {formatPublicDirectoryLabel(asset.directory)}
@@ -1095,11 +1197,15 @@ export default function AdminDashboard(props: AdminDashboardProps) {
                         </a>
                         <button
                           type="button"
-                          onClick={() => handleDeletePublicImage(asset.file, asset.directory)}
+                          onClick={() =>
+                            handleDeletePublicImage(asset.file, asset.directory)
+                          }
                           disabled={isDeletingPublicImage === deletionKey}
                           className="rounded-lg border border-red-500/60 px-3 py-2 text-xs font-semibold text-red-300 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          {isDeletingPublicImage === deletionKey ? "Suppression…" : "Supprimer"}
+                          {isDeletingPublicImage === deletionKey
+                            ? "Suppression…"
+                            : "Supprimer"}
                         </button>
                       </div>
                     </div>
@@ -1107,7 +1213,9 @@ export default function AdminDashboard(props: AdminDashboardProps) {
                 })}
               </div>
             ) : (
-              <p className="text-sm text-white/60">Aucun fichier dans ce dossier pour le moment.</p>
+              <p className="text-sm text-white/60">
+                Aucun fichier dans ce dossier pour le moment.
+              </p>
             )}
           </div>
         </div>
@@ -1271,7 +1379,9 @@ export default function AdminDashboard(props: AdminDashboardProps) {
                   )}
                 >
                   <span className="text-sm font-semibold">{panel.label}</span>
-                  <span className="text-xs text-white/60">{panel.description}</span>
+                  <span className="text-xs text-white/60">
+                    {panel.description}
+                  </span>
                 </button>
               );
             })}
