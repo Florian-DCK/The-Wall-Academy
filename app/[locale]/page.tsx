@@ -128,7 +128,7 @@ const Home = () => {
     />
   ));
   const chunks = {
-    br: () => <div className="-mb-3" />,
+    br: () => <br />, 
     highlight: (chunks: ReactNode) => (
       <span className="highlight">{chunks}</span>
     ),
