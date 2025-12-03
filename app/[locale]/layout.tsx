@@ -6,10 +6,174 @@ import { routing } from "@/i18n/routing";
 import CursorFollower from "@/components/CursorFollower";
 import { ViewTransition } from "react";
 
-export const metadata: Metadata = {
-  title: "The Wall Academy",
-  description: "Website for The Wall Academy of Vincent Vanasch",
+const SITE_NAME = "The Wall Academy";
+const metadataBase =
+  process.env.NEXT_PUBLIC_SITE_URL &&
+  process.env.NEXT_PUBLIC_SITE_URL.startsWith("http")
+    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
+    : undefined;
+
+const defaultDescription = "Website for The Wall Academy of Vincent Vanasch";
+
+const localeMeta: Record<
+  string,
+  { description: string; keywords: string[]; localeName: string }
+> = {
+  en: {
+    description: defaultDescription,
+    keywords: [
+      "The Wall Academy",
+      "Vincent Vanasch",
+      "goalkeeper academy",
+      "hockey training",
+      "goalkeeper coaching",
+      "field hockey camps",
+      "elite goalkeeper program",
+      "hockey goalkeeper lessons",
+    ],
+    localeName: "English",
+  },
+  fr: {
+    description: "Site de The Wall Academy de Vincent Vanasch",
+    keywords: [
+      "The Wall Academy",
+      "Vincent Vanasch",
+      "académie gardien",
+      "entrainement hockey",
+      "coaching gardien",
+      "stages de hockey",
+      "formation gardien de but hockey",
+      "programme élite gardien",
+      "entrainement gardien hockey",
+      "camp hockey gardien",
+      "formation gardien hockey sur gazon",
+      "coaching personnalisé gardien",
+    ],
+    localeName: "Français",
+  },
+  nl: {
+    description: "Website van The Wall Academy van Vincent Vanasch",
+    keywords: [
+      "The Wall Academy",
+      "Vincent Vanasch",
+      "keeper academie",
+      "hockey training",
+      "keeper coaching",
+      "hockey stages",
+      "keeper clinics",
+      "hockey doelman opleidingen",
+      "keeperschool",
+      "hockey doelman training",
+      "keeper kamp",
+      "persoonlijke keeper coaching",
+    ],
+    localeName: "Nederlands",
+  },
 };
+
+const languageAlternates = routing.locales.reduce(
+  (acc, locale) => ({ ...acc, [locale]: `/${locale}` }),
+  {} as Record<string, string>
+);
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
+  const { description, keywords, localeName } =
+    localeMeta[locale] ?? localeMeta[routing.defaultLocale];
+  const canonicalPath = locale === routing.defaultLocale ? "/" : `/${locale}`;
+
+  return {
+    ...(metadataBase ? { metadataBase } : {}),
+    applicationName: SITE_NAME,
+    title: {
+      default: SITE_NAME,
+      template: `%s | ${SITE_NAME}`,
+    },
+    description,
+    keywords,
+    authors: [{ name: SITE_NAME }, { name: "Vincent Vanasch" }],
+    creator: "The Wall Academy",
+    publisher: "The Wall Academy",
+    category: "Sports",
+    abstract: defaultDescription,
+    alternates: {
+      canonical: canonicalPath,
+      languages: languageAlternates,
+    },
+    openGraph: {
+      title: SITE_NAME,
+      description,
+      url: canonicalPath,
+      siteName: SITE_NAME,
+      locale,
+      alternateLocale: routing.locales.filter(
+        (availableLocale) => availableLocale !== locale
+      ),
+      type: "website",
+      images: [
+        {
+          url: "/brandLogo.png",
+          width: 800,
+          height: 800,
+          alt: "The Wall Academy logo",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: SITE_NAME,
+      description,
+      images: [
+        {
+          url: "/brandLogo.png",
+          alt: "The Wall Academy logo",
+        },
+      ],
+      creator: "@thewallacademy",
+      site: "@thewallacademy",
+    },
+    icons: {
+      icon: [
+        { url: "/favicon.ico" },
+        { url: "/brandLogo.png", sizes: "800x800", type: "image/png" },
+      ],
+      apple: "/brandLogo.png",
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        maxImagePreview: "large",
+        maxVideoPreview: -1,
+        maxSnippet: -1,
+      },
+    },
+    formatDetection: {
+      telephone: false,
+      address: false,
+      email: false,
+    },
+    appleWebApp: {
+      capable: true,
+      title: SITE_NAME,
+      statusBarStyle: "default",
+    },
+    other: {
+      "og:locale:language": localeName,
+    },
+  };
+}
 
 export default async function RootLayout({
   children,
