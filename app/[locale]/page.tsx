@@ -26,6 +26,7 @@ import TaoLogo from "@/components/TaoLogo";
 import FoodMakerLogo from "@/components/FoodMakerLogo";
 import HilariousLogo from "@/components/HilariousLogo";
 import Testimony from "@/components/Testimony";
+import carouselData from "@/data/carousel.json";
 gsap.registerPlugin(ScrollTrigger);
 
 const Home = () => {
@@ -82,48 +83,18 @@ const Home = () => {
   const testimonyChunks = {
     br: () => <br />,
   };
-  const testimonys = [
-    {
-      key: "t1",
-      image: "/stage_01.jpeg",
-      testimony: t.rich("Carousel.captionChris", testimonyChunks),
-      author: "Chris U12",
-    },
-    {
-      key: "t2",
-      image: "/stage_02.jpeg",
-      testimony: t.rich("Carousel.captionThomas", testimonyChunks),
-      author: "Thomas U14",
-    },
-    {
-      key: "t3",
-      image: "/stage_03.jpeg",
-      testimony: t.rich("Carousel.captionCamille", testimonyChunks),
-      author: "Camille U15",
-    },
-    {
-      key: "t4",
-      image: "/stage_04.jpeg",
-      testimony: t.rich("Carousel.captionCeline", testimonyChunks),
-      author: "Céline U16",
-    },
-    {
-      key: "t5",
-      image: "/stage_05.jpeg",
-      testimony: t.rich("Carousel.captionHugo", testimonyChunks),
-      author: "Hugo U16",
-    },
-    {
-      key: "t6",
-      image: "/stage_06.jpeg",
-      testimony: t.rich("Carousel.captionSarah", testimonyChunks),
-      author: "Sarah U16",
-    },
-  ].map((item) => (
+  type CarouselConfigItem = {
+    id: string;
+    image: string;
+    translationKey: string;
+    author: string;
+  };
+
+  const testimonys = (carouselData as CarouselConfigItem[]).map((item) => (
     <Testimony
-      key={item.key}
+      key={item.id}
       image={item.image}
-      testimony={item.testimony}
+      testimony={t.rich(item.translationKey, testimonyChunks)}
       author={item.author}
     />
   ));
