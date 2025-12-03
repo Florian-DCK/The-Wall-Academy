@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import AdminLoginForm, {
@@ -7,6 +8,7 @@ import AdminLoginForm, {
 } from "@/components/admin/AdminLoginForm";
 import AdminDashboard, {
   type CarouselItem,
+  type GallerySummary,
   type TranslationEntry,
 } from "@/components/admin/AdminDashboard";
 import {
@@ -16,6 +18,16 @@ import {
 } from "@/app/lib/admin-auth";
 import carouselConfig from "@/data/carousel.json";
 import { SUPPORTED_LOCALES } from "@/i18n/routing";
+import { PrismaClient, Prisma } from "@/app/generated/prisma-client/client";
+import {
+  DEFAULT_PUBLIC_UPLOAD_DIR,
+  GALLERIES_BASE,
+  PUBLIC_ROOT,
+  pathExists,
+  resolveGalleryFolder,
+  sanitizeNestedRelativePath,
+  sanitizeSegment,
+} from "@/app/lib/media-manager";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -24,6 +36,7 @@ type PageProps = {
 type TranslationTree = Record<string, unknown>;
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const prisma = new PrismaClient();
 
 function flattenTranslations(
   node: TranslationTree,
@@ -105,6 +118,253 @@ function deleteNestedValue(
   }
 
   return removed;
+}
+
+async function createGalleryAction(
+  locale: string,
+  _prevState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  "use server";
+
+  const session = await getAdminSession();
+  if (!session) {
+    return { error: "Accès refusé." };
+  }
+
+  const title = formData.get("title");
+  const password = formData.get("password");
+  const folder = formData.get("folder");
+  const dateValue = formData.get("date");
+
+  if (typeof title !== "string" || !title.trim()) {
+    return { error: "Le titre est requis." };
+  }
+
+  if (typeof password !== "string" || !password.trim()) {
+    return { error: "Le mot de passe est requis." };
+  }
+
+  const baseSegment =
+    sanitizeSegment(title.trim()) || `galerie-${randomUUID().slice(0, 8)}`;
+  const folderSegment =
+    typeof folder === "string" && folder.trim()
+      ? sanitizeSegment(folder.trim())
+      : baseSegment;
+  const initialSegment =
+    folderSegment || `galerie-${randomUUID().slice(0, 8)}`;
+
+  await fs.mkdir(GALLERIES_BASE, { recursive: true });
+
+  let relativeSegment = initialSegment;
+  let attempt = 1;
+  while (await pathExists(path.join(GALLERIES_BASE, relativeSegment))) {
+    relativeSegment = `${initialSegment}-${attempt++}`;
+  }
+
+  const absoluteTarget = path.join(GALLERIES_BASE, relativeSegment);
+  await fs.mkdir(absoluteTarget, { recursive: true });
+
+  try {
+    await prisma.gallery.create({
+      data: {
+        title: title.trim(),
+        password: password.trim(),
+        date:
+          typeof dateValue === "string" && dateValue.trim()
+            ? dateValue.trim()
+            : null,
+        photosPath: relativeSegment,
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return {
+        error: "Ce mot de passe est déjà utilisé par une autre galerie.",
+      };
+    }
+    console.error("createGalleryAction", error);
+    return {
+      error: "Impossible de créer la galerie. Consultez les logs.",
+    };
+  }
+
+  for (const code of SUPPORTED_LOCALES) {
+    revalidatePath(`/${code}/gallery`);
+    revalidatePath(`/${code}/admin`);
+  }
+
+  return { success: `Galerie "${title.trim()}" créée.` };
+}
+
+async function uploadGalleryImagesAction(
+  locale: string,
+  _prevState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  "use server";
+
+  const session = await getAdminSession();
+  if (!session) {
+    return { error: "Accès refusé." };
+  }
+
+  const galleryIdValue = formData.get("galleryId");
+  if (typeof galleryIdValue !== "string" || !galleryIdValue.trim()) {
+    return { error: "Sélectionnez une galerie." };
+  }
+
+  const galleryId = Number(galleryIdValue);
+  if (!Number.isInteger(galleryId)) {
+    return { error: "Identifiant de galerie invalide." };
+  }
+
+  const files = formData
+    .getAll("files")
+    .filter((value): value is File => value instanceof File && value.size > 0);
+
+  if (!files.length) {
+    return { error: "Ajoutez au moins une image." };
+  }
+
+  const galleryRecord = await prisma.gallery.findUnique({
+    where: { id: galleryId },
+    select: { id: true, title: true, photosPath: true },
+  });
+
+  if (!galleryRecord) {
+    return { error: "Galerie introuvable." };
+  }
+
+  await fs.mkdir(GALLERIES_BASE, { recursive: true });
+
+  let storedPath = galleryRecord.photosPath?.trim() ?? "";
+  if (!storedPath) {
+    const baseSegment =
+      sanitizeSegment(`gallery-${galleryRecord.id}`) ||
+      `gallery-${galleryRecord.id}`;
+    let candidate = baseSegment;
+    let suffix = 1;
+    while (await pathExists(path.join(GALLERIES_BASE, candidate))) {
+      candidate = `${baseSegment}-${suffix++}`;
+    }
+    storedPath = candidate;
+    await prisma.gallery.update({
+      where: { id: galleryRecord.id },
+      data: { photosPath: storedPath },
+    });
+  }
+
+  const absoluteFolder = resolveGalleryFolder(storedPath);
+  if (!absoluteFolder) {
+    return { error: "Impossible de déterminer le dossier cible." };
+  }
+
+  await fs.mkdir(absoluteFolder, { recursive: true });
+
+  let saved = 0;
+  for (const file of files) {
+    try {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const ext = (path.extname(file.name) || ".bin").toLowerCase();
+      const safeBase =
+        sanitizeSegment(path.parse(file.name).name) ||
+        `image-${randomUUID().slice(0, 8)}`;
+      let candidateName = `${safeBase}${ext}`;
+      let duplicate = 1;
+      while (await pathExists(path.join(absoluteFolder, candidateName))) {
+        candidateName = `${safeBase}-${duplicate++}${ext}`;
+      }
+      await fs.writeFile(path.join(absoluteFolder, candidateName), buffer);
+      saved += 1;
+    } catch (error) {
+      console.error("uploadGalleryImagesAction", error);
+    }
+  }
+
+  if (!saved) {
+    return { error: "Aucune image enregistrée." };
+  }
+
+  for (const code of SUPPORTED_LOCALES) {
+    revalidatePath(`/${code}/admin`);
+  }
+
+  return {
+    success: `${saved} image(s) ajoutée(s) à ${galleryRecord.title}.`,
+  };
+}
+
+async function uploadPublicImagesAction(
+  locale: string,
+  _prevState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  "use server";
+
+  const session = await getAdminSession();
+  if (!session) {
+    return { error: "Accès refusé." };
+  }
+
+  const targetDirValue = formData.get("targetDir");
+  let relativeDir = DEFAULT_PUBLIC_UPLOAD_DIR;
+  if (typeof targetDirValue === "string" && targetDirValue.trim()) {
+    const sanitized = sanitizeNestedRelativePath(targetDirValue.trim());
+    if (!sanitized) {
+      return { error: "Chemin de destination invalide." };
+    }
+    relativeDir = sanitized;
+  }
+
+  const files = formData
+    .getAll("files")
+    .filter((value): value is File => value instanceof File && value.size > 0);
+
+  if (!files.length) {
+    return { error: "Ajoutez au moins une image." };
+  }
+
+  await fs.mkdir(PUBLIC_ROOT, { recursive: true });
+  const absoluteTarget = path.normalize(path.join(PUBLIC_ROOT, relativeDir));
+  await fs.mkdir(absoluteTarget, { recursive: true });
+
+  let saved = 0;
+  for (const file of files) {
+    try {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const ext = (path.extname(file.name) || ".bin").toLowerCase();
+      const safeBase =
+        sanitizeSegment(path.parse(file.name).name) ||
+        `asset-${randomUUID().slice(0, 8)}`;
+      let candidateName = `${safeBase}${ext}`;
+      let duplicate = 1;
+      while (await pathExists(path.join(absoluteTarget, candidateName))) {
+        candidateName = `${safeBase}-${duplicate++}${ext}`;
+      }
+      await fs.writeFile(path.join(absoluteTarget, candidateName), buffer);
+      saved += 1;
+    } catch (error) {
+      console.error("uploadPublicImagesAction", error);
+    }
+  }
+
+  if (!saved) {
+    return { error: "Aucune image enregistrée." };
+  }
+
+  for (const code of SUPPORTED_LOCALES) {
+    revalidatePath(`/${code}`);
+    revalidatePath(`/${code}/admin`);
+  }
+
+  const displayPath = relativeDir.replace(/\\/g, "/");
+  return {
+    success: `${saved} image(s) ajoutée(s) dans ${displayPath}.`,
+  };
 }
 
 async function updateTranslationAction(
@@ -381,9 +641,38 @@ export default async function AdminPage({ params }: PageProps) {
     }))
     .sort((a, b) => a.key.localeCompare(b.key));
 
+  const galleriesData = await prisma.gallery.findMany({
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      title: true,
+      photosPath: true,
+      createdAt: true,
+      date: true,
+    },
+  });
+
+  const galleries: GallerySummary[] = galleriesData.map((gallery) => ({
+    id: gallery.id,
+    title: gallery.title,
+    photosPath: gallery.photosPath,
+    createdAt: gallery.createdAt.toISOString(),
+    date: gallery.date,
+  }));
+
   const carouselItems = (carouselConfig as CarouselItem[]).sort((a, b) =>
     a.id.localeCompare(b.id)
   );
+
+  const galleryRootLabel = (
+    process.env.GALLERIES_FOLDER?.trim() ||
+    path.relative(process.cwd(), GALLERIES_BASE) ||
+    "public"
+  ).replace(/\\/g, "/");
+  const publicRootLabel = (
+    path.relative(process.cwd(), PUBLIC_ROOT) || "public"
+  ).replace(/\\/g, "/");
+  const publicUploadsDefault = DEFAULT_PUBLIC_UPLOAD_DIR;
 
   if (!session) {
     const login = loginAction.bind(null, locale);
@@ -398,6 +687,9 @@ export default async function AdminPage({ params }: PageProps) {
   const upsertCarousel = upsertCarouselItemAction.bind(null, locale);
   const deleteCarousel = deleteCarouselItemAction.bind(null, locale);
   const logout = logoutAction.bind(null, locale);
+  const createGallery = createGalleryAction.bind(null, locale);
+  const uploadGalleryImages = uploadGalleryImagesAction.bind(null, locale);
+  const uploadPublicImages = uploadPublicImagesAction.bind(null, locale);
 
   return (
     <main className="min-h-screen bg-linear-to-b from-black via-[#05070d] to-black px-4 text-white">
@@ -406,9 +698,16 @@ export default async function AdminPage({ params }: PageProps) {
         locales={locales}
         translations={translations}
         carouselItems={carouselItems}
+        galleries={galleries}
+        galleryRootLabel={galleryRootLabel}
+        publicRootLabel={publicRootLabel}
+        publicUploadsDefault={publicUploadsDefault}
         updateTranslation={updateTranslation}
         upsertCarouselItem={upsertCarousel}
         deleteCarouselItem={deleteCarousel}
+        createGallery={createGallery}
+        uploadGalleryImages={uploadGalleryImages}
+        uploadPublicImages={uploadPublicImages}
         logout={logout}
       />
     </main>

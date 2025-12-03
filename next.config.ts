@@ -28,6 +28,9 @@ const nextConfig: NextConfig = {
 		viewTransition: true,
 		workerThreads: false,
 		cpus: 1,
+		serverActions: {
+			bodySizeLimit: "32mb",
+		},
 	},
 };
 

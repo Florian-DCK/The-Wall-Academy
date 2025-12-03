@@ -21,10 +21,14 @@ const GALLERIES_FOLDER = process.env.GALLERIES_FOLDER
   : PUBLIC_ROOT;
 const PAGE_SIZE = 20;
 const SIGNING_SECRET =
-  process.env.IMAGE_SIGNATURE_SECRET ?? process.env.SESSION_SECRET;
+  process.env.IMAGE_SIGNATURE_SECRET ??
+  process.env.SESSION_SECRET ??
+  "dev-gallery-signature";
 
-if (!SIGNING_SECRET) {
-  throw new Error("IMAGE_SIGNATURE_SECRET or SESSION_SECRET must be defined");
+if (!process.env.IMAGE_SIGNATURE_SECRET && !process.env.SESSION_SECRET) {
+  console.warn(
+    "IMAGE_SIGNATURE_SECRET or SESSION_SECRET is not defined; using a development fallback for image signatures."
+  );
 }
 
 type ImagePayload = {

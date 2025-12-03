@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useEffect, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 export type FormState = {
   error?: string;
@@ -15,7 +15,7 @@ type AdminLoginFormProps = {
 const initialState: FormState = {};
 
 export default function AdminLoginForm({ action }: AdminLoginFormProps) {
-  const [state, formAction] = useFormState(action, initialState);
+  const [state, formAction] = useActionState(action, initialState);
   const [showError, setShowError] = useState<string | undefined>(state?.error);
 
   useEffect(() => {
