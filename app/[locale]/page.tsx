@@ -194,6 +194,7 @@ const Home = () => {
 		<main className="overflow-x-hidden">
 			<section id="landing" className="h-screen bg-black grid grid-cols-2">
 				<Image
+					ref={fadeInUpRef}
 					src={'/brandLogo.png'}
 					alt={'The wall academy logo'}
 					width={400}
@@ -306,16 +307,17 @@ const Home = () => {
 					<div className="relative">
 						<div
 							id="whatIsTitlePin"
-							className="sticky top-0 lg:top-15 z-10 bg-white py-4">
+							className="sticky top-0 lg:top-15 z-10 bg-white py-4 items-center flex justify-end">
+							<Image
+								className="shrink-0 ml-4 object-contain h-full"
+								src={'/casque_bauer.png'}
+								width={200}
+								height={200}
+								alt="Casque Bauer"
+							/>
 							<h2 className="text-3xl font-extrabold uppercase text-right [&_div]:-mb-1">
 								{t.rich('WhatIs.title', chunks)}
 							</h2>
-							<Image
-								src={'/casque_bauer.png'}
-								width={100}
-								height={100}
-								alt="Casque Bauer"
-							/>
 						</div>
 					</div>
 					<div id="whatIsList" className="relative z-0">

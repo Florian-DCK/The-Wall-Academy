@@ -4,7 +4,12 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-type AnimationType = 'slideInLeft' | 'slideInRight' | 'fadeInUp' | 'fadeInDown' | 'scaleIn';
+type AnimationType =
+	| 'slideInLeft'
+	| 'slideInRight'
+	| 'fadeInUp'
+	| 'fadeInDown'
+	| 'scaleIn';
 
 interface UseScrollAnimationProps {
 	type?: AnimationType;
@@ -47,7 +52,7 @@ export const useScrollAnimation = ({
 						return acc;
 					}, {} as Record<string, number>),
 					duration,
-					delay: delay + (index * stagger),
+					delay: delay + index * stagger,
 					scrollTrigger: {
 						trigger: element,
 						start: 'top 80%',
