@@ -25,7 +25,7 @@ const Testimony: React.FC<TestimonyProps> = ({
 				<Image src={image} alt={author} fill style={{ objectFit: 'cover' }} />
 			</div>
 
-			<div className="flex-1 flex flex-col justify-between">
+			<div className="flex-1 flex flex-col justify-between testimonyText ">
 				<p className="text-sm italic text-gray-700 leading-relaxed">
 					{testimony}
 				</p>

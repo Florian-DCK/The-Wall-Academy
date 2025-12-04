@@ -151,26 +151,32 @@
 	gap: var(--slide-spacing);
 }
 .embla__slide {
-	transform: translate3d(0, 0, 0);
-	flex: 0 0 var(--slide-size);
-	min-width: var(--slide-size);
 	max-width: var(--slide-size);
 	opacity: 0.25;
 }
 .embla__slide:not(.is-active) .embla__slide__content {
 	filter: grayscale(0.6) brightness(1.25);
-	/* transform: scale(0.75); */
+	transform: scale(0.75);
 }
 .embla__slide.is-active {
 	opacity: 1;
 	transform: scale(1.02);
+
+	.testimonyText {
+		opacity: 1;
+	}
+
+	.embla__slide__content {
+		filter: none;
+	}
 }
-.embla__slide.is-active .embla__slide__content {
-	filter: none;
-}
+
 .embla__slide__content {
 	width: 100%;
 	height: 100%;
+}
+.testimonyText {
+	opacity: 0;
 }
 .embla__controls {
 	display: grid;
@@ -203,11 +209,6 @@
 	align-items: center;
 	justify-content: center;
 	line-height: 0; /* évite l'espace blanc lié à l'alignement inline */
-}
-.embla__button__svg {
-	width: 35%;
-	height: 35%;
-	display: block; /* s'assure qu'il n'y a pas d'espace blanc baseline */
 }
 /* recentre le path à l'intérieur du svg si le viewBox contient de l'espace vide */
 .embla__button__svg path {

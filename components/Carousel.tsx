@@ -19,29 +19,14 @@ const Carousel: React.FC<PropType> = (props) => {
 	const { items, slides, options } = props;
 	const [emblaRef, emblaApi] = useEmblaCarousel(options);
 	const [selectedIndex, setSelectedIndex] = useState(0);
-	const [isMobile, setIsMobile] = useState(false);
 	const totalSlides = useMemo(
 		() => items?.length ?? slides?.length ?? 0,
 		[items?.length, slides?.length]
 	);
 	const highlightedIndex = useMemo(() => {
 		if (!totalSlides) return 0;
-		if (isMobile) return selectedIndex;
-		return (selectedIndex + 1) % totalSlides;
-	}, [selectedIndex, totalSlides, isMobile]);
-
-	useEffect(() => {
-		const updateIsMobile = () => {
-			if (typeof window === 'undefined') return;
-			setIsMobile(window.matchMedia('(max-width: 768px)').matches);
-		};
-
-		updateIsMobile();
-		window.addEventListener('resize', updateIsMobile);
-		return () => {
-			window.removeEventListener('resize', updateIsMobile);
-		};
-	}, []);
+		return selectedIndex;
+	}, [selectedIndex, totalSlides]);
 
 	const {
 		prevBtnDisabled,
@@ -66,11 +51,11 @@ const Carousel: React.FC<PropType> = (props) => {
 	return (
 		<section className="embla relative w-full">
 			<div className="embla__viewport" ref={emblaRef}>
-				<div className="embla__container">
+				<div className="embla__container ">
 					{items
 						? items.map((node, idx) => (
 								<div
-									className={`embla__slide ${
+									className={`embla__slide transition-opacity duration-200 ${
 										totalSlides && idx === highlightedIndex ? 'is-active' : ''
 									}`}
 									key={idx}>
@@ -91,7 +76,7 @@ const Carousel: React.FC<PropType> = (props) => {
 
 			<PrevButton
 				className={
-					'absolute left-0 transform -translate-y-1/2 top-1/2 text-secondary'
+					'absolute left-0 lg:-left-40 transform -translate-y-1/2 top-1/2 text-secondary'
 				}
 				onClick={onPrevButtonClick}
 				disabled={prevBtnDisabled}
@@ -99,7 +84,7 @@ const Carousel: React.FC<PropType> = (props) => {
 			/>
 			<NextButton
 				className={
-					' border absolute right-0 transform -translate-y-1/2 top-1/2 text-secondary'
+					' border absolute right-0 lg:-right-40 transform -translate-y-1/2 top-1/2 text-secondary'
 				}
 				onClick={onNextButtonClick}
 				disabled={nextBtnDisabled}
