@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import { SUPPORTED_LOCALES } from '@/i18n/routing';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import Carousel from '@/components/Carousel';
 import type { EmblaOptionsType } from 'embla-carousel';
@@ -26,11 +26,23 @@ import TaoLogo from '@/components/TaoLogo';
 import FoodMakerLogo from '@/components/FoodMakerLogo';
 import HilariousLogo from '@/components/HilariousLogo';
 import Testimony from '@/components/Testimony';
+import { useScrollAnimation } from '../lib/useScrollAnimation';
 gsap.registerPlugin(ScrollTrigger);
 
 const Home = () => {
 	const t = useTranslations('Home');
 	const lang = useLocale();
+
+	const slideInLeftRef = useScrollAnimation({
+		type: 'slideInLeft',
+		duration: 1,
+	}) as React.RefObject<HTMLHeadingElement | null>;
+	const slideInRightRef = useScrollAnimation({
+		type: 'slideInRight',
+		duration: 1,
+	});
+	const fadeInUpRef = useScrollAnimation({ type: 'fadeInUp', duration: 1 });
+
 	const OPTIONS: EmblaOptionsType = {
 		containScroll: false,
 		loop: true,
@@ -186,7 +198,7 @@ const Home = () => {
 					alt={'The wall academy logo'}
 					width={400}
 					height={400}
-					className="absolute top-8 left-10 w-20 lg:w-40 h-auto object-contain"
+					className="absolute top-8 left-10 w-20 lg:w-40 h-auto object-contain z-10"
 				/>
 				<div className="flex items-center lg:justify-end">
 					<div className="relative h-full w-full overflow-hidden">
@@ -194,13 +206,15 @@ const Home = () => {
 							src="/vincent-vanasch-left-side.jpeg"
 							alt="Vincent Vanasch"
 							fill
-							className="object-cover object-right"
+							className="object-cover object-right z-5"
 							priority
 						/>
 					</div>
 				</div>
 				<div className="flex flex-col justify-center gap-5">
-					<p className="text-3xl lg:text-8xl font-extrabold uppercase leading-6 lg:leading-18 text-white">
+					<h1
+						ref={slideInLeftRef}
+						className="text-3xl lg:text-8xl font-extrabold uppercase leading-6 lg:leading-18 text-white">
 						{t.rich('title', {
 							br: () => <br />,
 							highlight: (chunks) => (
@@ -209,7 +223,7 @@ const Home = () => {
 								</span>
 							),
 						})}
-					</p>
+					</h1>
 					<div
 						className={'flex flex-col w-20 lg:w-fit items-center gap-1 ml-2'}>
 						<Image
@@ -239,13 +253,16 @@ const Home = () => {
 				id="mainCTA"
 				className="min-h-screen bg-[#fdfcff] overflow-hidden text-black grid grid-cols-1 gap-8 lg:grid-cols-2 items-center-safe">
 				<div className="order-2 flex flex-col overflow-hidden gap-8 lg:order-1">
-					<p
+					<h2
+						ref={slideInRightRef}
 						className={
 							' text-3xl lg:text-4xl text-center lg:text-right font-extrabold uppercase'
 						}>
 						{t.rich('headline1', chunks)}
-					</p>
-					<p className={' text-center lg:text-right text-2xl lg:text-3xl'}>
+					</h2>
+					<p
+						ref={fadeInUpRef}
+						className={' text-center lg:text-right text-2xl lg:text-3xl'}>
 						{t.rich('description1', chunks)}
 					</p>
 					<Button
@@ -276,7 +293,9 @@ const Home = () => {
 				id="testimony"
 				className="h-screen bg-white text-black grid-cols-2 flex items-center justify-center relative">
 				<Carousel items={testimonys} options={OPTIONS} />
-				<h2 className="absolute top-5 right-5 lg:top-20 lg:right-20 text-4xl text-right font-extrabold leading-7 uppercase backdrop-blur-md bg-white/20 px-4 py-2 rounded">
+				<h2
+					ref={slideInRightRef}
+					className="absolute top-5 right-5 lg:top-20 lg:right-20 text-4xl text-right font-extrabold leading-7 uppercase backdrop-blur-md bg-white/20 px-4 py-2 rounded">
 					{t.rich('testimonyCatchphrase', chunks)}
 				</h2>
 			</section>
@@ -318,13 +337,15 @@ const Home = () => {
 				id="campCTA"
 				className="min-h-screen overflow-hidden text-black grid grid-cols-1 gap-8 lg:grid-cols-2 items-center-safe">
 				<div className="order-2 flex flex-col overflow-hidden gap-8 lg:order-1 mb-10">
-					<p
+					<h2
+						ref={slideInLeftRef}
 						className={
 							'text-3xl lg:text-4xl text-left ml-5 lg:ml-0 lg:text-right font-extrabold uppercase'
 						}>
 						{t.rich('headline2', chunks)}
-					</p>
+					</h2>
 					<p
+						ref={fadeInUpRef}
 						className={
 							'text-left mx-5 lg:mx-0 lg:text-right text-2xl lg:text-3xl font-extrabold uppercase [&_div]:mb-0'
 						}>
@@ -367,7 +388,9 @@ const Home = () => {
 			<section id="footer" className="bg-black min-h-screen pb-40">
 				<div className={'grid h-dvh lg:h-full grid-cols-2'}>
 					<div className="flex flex-col justify-center gap-5">
-						<p className="text-3xl lg:text-8xl text-right font-extrabold uppercase leading-6 lg:leading-18 text-white">
+						<h3
+							ref={slideInRightRef}
+							className="text-3xl lg:text-8xl text-right font-extrabold uppercase leading-6 lg:leading-18 text-white">
 							{t.rich('Footer.title', {
 								br: () => <br />,
 								highlight: (chunks) => (
@@ -376,7 +399,7 @@ const Home = () => {
 									</span>
 								),
 							})}
-						</p>
+						</h3>
 						<div
 							className={'flex flex-col w-fit ml-auto items-center gap-1 mr-2'}>
 							<Image
