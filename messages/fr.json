@@ -65,5 +65,12 @@
 	"Header": {
 		"connect": "Choisir un autre album",
 		"toggleNavigation": "Basculer le menu de navigation"
+	},
+	"EventBanner": {
+		"BOOK_NOW": "JE M'INSCRIS",
+		"REMAINING": "IL RESTE",
+		"PLACES": "PLACES",
+		"FROM": "DU",
+		"TO": "AU"
 	}
 }

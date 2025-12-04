@@ -36,7 +36,7 @@ const Home = () => {
 	const slideInLeftRef = useScrollAnimation({
 		type: 'slideInLeft',
 		duration: 1,
-	}) as React.RefObject<HTMLHeadingElement | null>;
+	}) as React.RefCallback<HTMLHeadingElement | null>;
 	const slideInRightRef = useScrollAnimation({
 		type: 'slideInRight',
 		duration: 1,
@@ -307,12 +307,12 @@ const Home = () => {
 					<div className="relative">
 						<div
 							id="whatIsTitlePin"
-							className="sticky top-0 lg:top-15 z-10 bg-white py-4 items-center flex justify-end">
+							className="sticky top-0 lg:top-15 z-10 bg-white py-4 items-center flex w-full justify-end ">
 							<Image
-								className="shrink-0 ml-4 object-contain h-full"
+								className="shrink-0 h-full w-auto"
 								src={'/casque_bauer.png'}
-								width={200}
-								height={200}
+								width={100}
+								height={100}
 								alt="Casque Bauer"
 							/>
 							<h2 className="text-3xl font-extrabold uppercase text-right [&_div]:-mb-1">

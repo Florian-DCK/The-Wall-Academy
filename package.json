@@ -28,6 +28,7 @@
 		"photoswipe": "^5.4.4",
 		"react": "19.2.0",
 		"react-dom": "19.2.0",
+		"react-split-flap": "^0.1.7",
 		"tailwind-merge": "^3.4.0"
 	},
 	"devDependencies": {

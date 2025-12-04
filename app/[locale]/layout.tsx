@@ -4,6 +4,7 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import CursorFollower from '@/components/CursorFollower';
+import EventBanner from '@/components/EventBanner';
 
 const SITE_NAME = 'The Wall Academy';
 const metadataBase =
@@ -233,6 +234,7 @@ export default async function RootLayout({
 				<CursorFollower />
 				<NextIntlClientProvider locale={locale} messages={messages}>
 					{children}
+					<EventBanner />
 				</NextIntlClientProvider>
 			</body>
 		</html>
