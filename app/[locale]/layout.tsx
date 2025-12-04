@@ -1,66 +1,242 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import { NextIntlClientProvider, hasLocale } from "next-intl";
-import { notFound } from "next/navigation";
-import { routing } from "@/i18n/routing";
-import Header from "@/components/Header";
-import CursorFollower from "@/components/CursorFollower";
-import { Bebas_Neue, Space_Grotesk } from "next/font/google";
-import { ViewTransition } from "react";
+import type { Metadata } from 'next';
+import './home.css';
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import { notFound } from 'next/navigation';
+import { routing } from '@/i18n/routing';
+import CursorFollower from '@/components/CursorFollower';
+import EventBanner from '@/components/EventBanner';
 
-const headingFont = Bebas_Neue({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-heading",
-});
+const SITE_NAME = 'The Wall Academy';
+const metadataBase =
+	process.env.NEXT_PUBLIC_SITE_URL &&
+	process.env.NEXT_PUBLIC_SITE_URL.startsWith('http')
+		? new URL(process.env.NEXT_PUBLIC_SITE_URL)
+		: undefined;
 
-const bodyFont = Space_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-body",
-});
+const defaultDescription = 'Website for The Wall Academy of Vincent Vanasch';
 
-export const metadata: Metadata = {
-  title: "The Wall Academy Gallery",
-  description: "Gallery application for The Wall Academy camps",
+const localeMeta: Record<
+	string,
+	{ description: string; keywords: string[]; localeName: string }
+> = {
+	en: {
+		description: defaultDescription,
+		keywords: [
+			'The Wall Academy',
+			'Vincent Vanasch',
+			'goalkeeper academy',
+			'hockey training',
+			'camps',
+			'élite',
+			'belgium',
+			'goalkeeper clinics',
+			'hockey goalkeeper training',
+			'goalkeeper school',
+			'hockey goalkeeper drills',
+			'goalkeeper coaching',
+			'field hockey camps',
+			'elite goalkeeper program',
+			'hockey goalkeeper lessons',
+		],
+		localeName: 'English',
+	},
+	fr: {
+		description: 'Site de The Wall Academy de Vincent Vanasch',
+		keywords: [
+			'The Wall Academy',
+			'Vincent Vanasch',
+			'académie gardien',
+			'entrainement hockey',
+			'belgique',
+			'coaching gardien',
+			'stage',
+			'élite',
+			'stages de hockey',
+			'formation gardien de but hockey',
+			'programme élite gardien',
+			'entrainement gardien hockey',
+			'camp hockey gardien',
+			'formation gardien hockey sur gazon',
+			'coaching personnalisé gardien',
+		],
+		localeName: 'Français',
+	},
+	nl: {
+		description: 'Website van The Wall Academy van Vincent Vanasch',
+		keywords: [
+			'The Wall Academy',
+			'Vincent Vanasch',
+			'élite',
+			'keeper academie',
+			'hockey training',
+			'kampen',
+			'België',
+			'keeper coaching',
+			'hockey stages',
+			'keeper clinics',
+			'hockey doelman opleidingen',
+			'keeperschool',
+			'hockey doelman training',
+			'keeper kamp',
+			'persoonlijke keeper coaching',
+		],
+		localeName: 'Nederlands',
+	},
 };
 
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+	const { locale } = await params;
+
+	if (!hasLocale(routing.locales, locale)) {
+		notFound();
+	}
+
+	const { description, keywords, localeName } =
+		localeMeta[locale] ?? localeMeta[routing.defaultLocale];
+	const canonicalPath = locale === routing.defaultLocale ? '/' : `/${locale}`;
+	const absoluteCanonicalUrl = new URL(canonicalPath, metadataBase).toString();
+
+	const languages = routing.locales.reduce((acc, loc) => {
+		const path = loc === routing.defaultLocale ? '/' : `/${loc}`;
+		acc[loc] = new URL(path, metadataBase).toString();
+		return acc;
+	}, {} as Record<string, string>);
+
+	return {
+		...(metadataBase ? { metadataBase } : {}),
+		applicationName: SITE_NAME,
+		title: {
+			default: SITE_NAME,
+			template: `%s | ${SITE_NAME}`,
+		},
+		description,
+		keywords,
+		authors: [{ name: SITE_NAME }, { name: 'Vincent Vanasch' }],
+		creator: 'Hilarious Agency',
+		publisher: 'Hilarious Agency',
+		category: 'Sports',
+		abstract: defaultDescription,
+		alternates: {
+			canonical: absoluteCanonicalUrl,
+			languages,
+		},
+		openGraph: {
+			title: SITE_NAME,
+			description,
+			url: absoluteCanonicalUrl,
+			siteName: SITE_NAME,
+			locale,
+			alternateLocale: routing.locales.filter(
+				(availableLocale) => availableLocale !== locale
+			),
+			type: 'website',
+			images: [
+				{
+					url: new URL('/brandLogo.png', metadataBase).toString(),
+					width: 800,
+					height: 800,
+					alt: 'The Wall Academy logo',
+				},
+			],
+		},
+		twitter: {
+			card: 'summary_large_image',
+			title: SITE_NAME,
+			description,
+			images: [
+				{
+					url: new URL('/brandLogo.png', metadataBase).toString(),
+					alt: 'The Wall Academy logo',
+				},
+			],
+			creator: '@thewallacademy',
+			site: '@thewallacademy',
+		},
+		icons: {
+			icon: [
+				{ url: new URL('/favicon.ico', metadataBase).toString() },
+				{
+					url: new URL('/brandLogo.png', metadataBase).toString(),
+					sizes: '800x800',
+					type: 'image/png',
+				},
+			],
+			apple: new URL('/brandLogo.png', metadataBase).toString(),
+		},
+		robots: {
+			index: true,
+			follow: true,
+			googleBot: {
+				index: true,
+				follow: true,
+				'max-image-preview': 'large',
+				'max-video-preview': -1,
+				'max-snippet': -1,
+			},
+		},
+		formatDetection: {
+			telephone: false,
+			address: false,
+			email: false,
+		},
+		appleWebApp: {
+			capable: true,
+			title: SITE_NAME,
+			statusBarStyle: 'default',
+		},
+	};
+}
+
 export default async function RootLayout({
-  children,
-  params,
+	children,
+	params,
 }: Readonly<{
-  children: React.ReactNode;
-  params: Promise<{ locale: string }>;
+	children: React.ReactNode;
+	params: Promise<{ locale: string }>;
 }>) {
-  const { locale } = await params;
-  if (!hasLocale(routing.locales, locale)) {
-    notFound();
-  }
+	const { locale } = await params;
+	if (!hasLocale(routing.locales, locale)) {
+		notFound();
+	}
 
-  // Charge les messages de traduction pour la locale demandée.
-  let messages: Record<string, unknown> | undefined;
-  try {
-    // Le chemin relatif depuis `app/[locale]/layout.tsx` vers `messages/{locale}.json`
-    messages = (await import(`../../messages/${locale}.json`)).default;
-  } catch {
-    // Si les messages ne sont pas trouvés, afficher 404 (ou gérer autrement)
-    notFound();
-  }
+	// Charge les messages de traduction pour la locale demandée.
+	let messages: Record<string, unknown> | undefined;
+	try {
+		// Le chemin relatif depuis `app/[locale]/layout.tsx` vers `messages/{locale}.json`
+		messages = (await import(`../../messages/${locale}.json`)).default;
+	} catch {
+		// Si les messages ne sont pas trouvés, afficher 404 (ou gérer autrement)
+		notFound();
+	}
 
-  return (
-    <html
-      lang={locale}
-      className={`${headingFont.variable} ${bodyFont.variable}`}
-    >
-      <body className="antialiased flex flex-col min-h-screen cursor-crosshair">
-        <CursorFollower />
-        <ViewTransition>
-          <NextIntlClientProvider locale={locale} messages={messages}>
-            <Header isConnected={false} />
-            {children}
-          </NextIntlClientProvider>
-        </ViewTransition>
-      </body>
-    </html>
-  );
+	return (
+		<html lang={locale} className={`font-body`}>
+			<head>
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{
+						__html: JSON.stringify({
+							'@context': 'https://schema.org',
+							'@type': 'Organization',
+							name: 'The Wall Academy',
+							url: metadataBase ? metadataBase.toString() : undefined,
+							logo: new URL('/brandLogo.png', metadataBase).toString(),
+							founder: 'Vincent Vanasch',
+						}),
+					}}
+				/>
+			</head>
+			<body className="antialiased flex flex-col min-h-screen cursor-crosshair text-white font-body">
+				<CursorFollower />
+				<NextIntlClientProvider locale={locale} messages={messages}>
+					{children}
+					<EventBanner />
+				</NextIntlClientProvider>
+			</body>
+		</html>
+	);
 }

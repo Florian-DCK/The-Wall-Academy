@@ -1,22 +1,25 @@
 {
-	"HomePage": {
-		"title": "Access every iconic moment<br></br>from their adventure.",
-		"cardTitle": "Identify yourself!",
-		"cardDescription": "Log in to access the gallery for the selected camp.",
-		"selectPlaceholder": "Select a camp",
-		"selectAnotherPlaceholder": "Select another camp",
-		"passwordPlaceholder": "Enter the password",
+  "Home": {
+    "title": "my<br></br>goal:<br></br>get the<br></br><highlight>best</highlight><br></br><highlight>keepers</highlight><br></br>out."
+  },
+  "Gallery": {
+    "title": "Access every iconic moment<br></br>from their adventure.",
+    "cardTitle": "Identify yourself!",
+    "cardDescription": "Log in to access the gallery for the selected camp.",
+    "selectPlaceholder": "Select a camp",
+    "selectAnotherPlaceholder": "Select another camp",
+    "passwordPlaceholder": "Enter the password",
 
-		"passwordLabel": "Password",
-		"selectLabel": "Camp",
-		"buttonSubmit": "Access the photos!",
-		"successMessage": "Successfully connected.",
-		"errorMessage": "An error occurred, please check your credentials.",
-		"privacyNote": "Secure access for enrolled guardians",
-		"heroClaim": "Their highlight moments"
-	},
-	"Header": {
-		"connect": "Choose another album",
-		"toggleNavigation": "Toggle navigation menu"
-	}
+    "passwordLabel": "Password",
+    "selectLabel": "Camp",
+    "buttonSubmit": "Access the photos!",
+    "successMessage": "Successfully connected.",
+    "errorMessage": "An error occurred, please check your credentials.",
+    "privacyNote": "Secure access for enrolled guardians",
+    "heroClaim": "Their highlight moments"
+  },
+  "Header": {
+    "connect": "Choose another album",
+    "toggleNavigation": "Toggle navigation menu"
+  }
 }
