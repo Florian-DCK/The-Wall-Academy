@@ -266,7 +266,7 @@ const Home = () => {
 					/>
 					<p
 						className={
-							'absolute top-20 -right-10 text-xs lg:text-base lg:top-25 lg:-right-5 transform-gpu -rotate-90 italic'
+							'absolute top-20 -right-10 text-xs lg:text-base lg:top-25 lg:-right-5 transform-gpu -rotate-90 italic backdrop-blur-sm bg-black/40 px-2 py-1 rounded'
 						}>
 						Energized by <strong>NAKED</strong>
 					</p>
@@ -274,8 +274,11 @@ const Home = () => {
 			</section>
 			<section
 				id="testimony"
-				className="h-screen bg-white text-black grid-cols-2 flex items-center justify-center">
+				className="h-screen bg-white text-black grid-cols-2 flex items-center justify-center relative">
 				<Carousel items={testimonys} options={OPTIONS} />
+				<h2 className="absolute top-5 right-5 lg:top-20 lg:right-20 text-4xl text-right font-extrabold leading-7 uppercase backdrop-blur-md bg-white/20 px-4 py-2 rounded">
+					{t.rich('testimonyCatchphrase', chunks)}
+				</h2>
 			</section>
 			<section
 				id="whatIs"
@@ -288,6 +291,12 @@ const Home = () => {
 							<h2 className="text-3xl font-extrabold uppercase text-right [&_div]:-mb-1">
 								{t.rich('WhatIs.title', chunks)}
 							</h2>
+							<Image
+								src={'/casque_bauer.png'}
+								width={100}
+								height={100}
+								alt="Casque Bauer"
+							/>
 						</div>
 					</div>
 					<div id="whatIsList" className="relative z-0">
@@ -338,7 +347,7 @@ const Home = () => {
 					/>
 					<p
 						className={
-							'absolute top-20 -right-10 text-xs lg:text-base lg:top-25 lg:-right-5 transform-gpu -rotate-90 italic'
+							'absolute top-20 -right-10 text-xs lg:text-base lg:top-25 lg:-right-5 transform-gpu -rotate-90 italic backdrop-blur-sm bg-black/40 px-2 py-1 rounded'
 						}>
 						Energized by <strong>TAO</strong>
 					</p>
