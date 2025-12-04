@@ -26,11 +26,11 @@ const Testimony: React.FC<TestimonyProps> = ({
 			</div>
 
 			<div className="flex-1 flex flex-col justify-between testimonyText ">
-				<p className="text-sm italic text-gray-700 leading-relaxed">
+				<p className="text-sm italic text-gray-700 leading-relaxed mx-5">
 					{testimony}
 				</p>
 
-				<div className="mt-6 flex items-center justify-between">
+				<div className="mt-6 flex items-center justify-between mx-5">
 					<div className="flex-1 border-t border-gray-300" />
 					<p className="ml-4 text-right text-sm font-medium text-gray-700">
 						{author}

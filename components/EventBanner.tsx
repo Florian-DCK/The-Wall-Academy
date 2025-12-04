@@ -80,7 +80,10 @@ export default function EventBanner() {
 
 	return (
 		<div
-			className={`fixed bottom-0 left-0 h-30 lg:flex justify-center items-center right-0 z-50 bg-linear-to-r from-secondary to-primary text-white`}>
+			className={`fixed bottom-0 left-0 h-30 lg:flex justify-center items-center right-0 z-50 bg-linear-to-r from-secondary to-primary text-white animate-bounce-up`}
+			style={{
+				animation: 'slideUpBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
+			}}>
 			<div className="px-4 py-3 flex items-center justify-center gap-2 lg:gap-8 flex-col lg:flex-row">
 				<div className="items-center gap-2 text-lg font-extrabold hidden md:flex">
 					<span>{t('REMAINING')}</span>
