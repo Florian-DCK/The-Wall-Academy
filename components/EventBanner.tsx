@@ -22,7 +22,7 @@ export default function EventBanner() {
 	useEffect(() => {
 		const fetchEvents = async () => {
 			try {
-				const response = await fetch('/api/events?test=true');
+				const response = await fetch('/api/events');
 				if (!response.ok) {
 					throw new Error('Failed to fetch events');
 				}
