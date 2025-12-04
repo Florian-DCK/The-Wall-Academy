@@ -3,13 +3,12 @@ import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import { SUPPORTED_LOCALES } from '@/i18n/routing';
 import React, { ReactNode } from 'react';
+import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
-import Carousel from '@/components/Carousel';
 import type { EmblaOptionsType } from 'embla-carousel';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import WhatIsItem from '@/components/WhatIsItem';
 import {
 	Sparkles,
 	Trophy,
@@ -25,9 +24,21 @@ import BraboLogo from '@/components/BraboLogo';
 import TaoLogo from '@/components/TaoLogo';
 import FoodMakerLogo from '@/components/FoodMakerLogo';
 import HilariousLogo from '@/components/HilariousLogo';
-import Testimony from '@/components/Testimony';
 import { useScrollAnimation } from '../lib/useScrollAnimation';
 gsap.registerPlugin(ScrollTrigger);
+
+const Carousel = dynamic(() => import('@/components/Carousel'), {
+	ssr: false,
+	loading: () => (
+		<div className="flex h-full w-full items-center justify-center bg-black/10 text-white/70">
+			Chargement...
+		</div>
+	),
+});
+
+const Testimony = dynamic(() => import('@/components/Testimony'));
+
+const WhatIsItem = dynamic(() => import('@/components/WhatIsItem'));
 
 const Home = () => {
 	const t = useTranslations('Home');
