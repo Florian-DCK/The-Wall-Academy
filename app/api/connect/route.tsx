@@ -27,7 +27,16 @@ export async function POST(request: Request) {
 		} else {
 			await createSession(id.toString());
 			return NextResponse.json(
-				{ message: 'Connected to the gallery', data: galleryInfo },
+				{
+					message: 'Connected to the gallery',
+					data: {
+						id: galleryInfo.id,
+						title: galleryInfo.title,
+						date: galleryInfo.date,
+						photosPath: galleryInfo.photosPath,
+						createdAt: galleryInfo.createdAt,
+					},
+				},
 				{ status: 200 }
 			);
 		}

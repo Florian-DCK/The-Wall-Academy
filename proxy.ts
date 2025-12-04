@@ -13,8 +13,8 @@ export const config = {
 	matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)',
 };
 
-// We'll consider only the locale root (e.g. `/fr`) and `/` as public.
-// All other routes will be treated as protected.
+// We'll consider only the locale root (e.g. `/fr`), `/`, and the gallery entry
+// pages as public. All other routes will be treated as protected.
 
 export default async function middleware(req: NextRequest) {
 	// 1. Run next-intl middleware first so locale detection / redirects occur
@@ -35,7 +35,18 @@ export default async function middleware(req: NextRequest) {
 	const isLocaleRoot =
 		Array.isArray(locales) && locales.some((l) => path === `/${l}`);
 	const isRoot = path === '/';
-	const isPublicRoute = isLocaleRoot || isRoot;
+	// Allow gallery selection page to be reachable without a session
+	const isGalleryPath = (() => {
+		const base = '/gallery';
+		if (path === base || path.startsWith(`${base}/`)) return true;
+		if (!Array.isArray(locales)) return false;
+		return locales.some(
+			(locale) =>
+				path === `/${locale}${base}` ||
+				path.startsWith(`/${locale}${base}/`)
+		);
+	})();
+	const isPublicRoute = isLocaleRoot || isRoot || isGalleryPath;
 	const isProtectedRoute = !isPublicRoute;
 
 	const cookie = req.cookies.get('session')?.value ?? null;
