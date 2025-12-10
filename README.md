@@ -58,3 +58,9 @@ Chaque fichier contient des paires clé-valeur. Pour changer un texte, il suffit
   }
 }
 ```
+
+### Infomaniak
+pour npm i ne pas oublier de run export NODE_OPTIONS="--max-old-space-size=256" avant de npm i
+ensuite npx prisma generate au cas où
+ensuite pour next js dans sa config mettre dans la catégorie experimentale cpus! 1 et workerThreads à false
+npm build
