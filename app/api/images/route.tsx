@@ -21,10 +21,14 @@ const GALLERIES_FOLDER = process.env.GALLERIES_FOLDER
   : PUBLIC_ROOT;
 const PAGE_SIZE = 20;
 const SIGNING_SECRET =
-  process.env.IMAGE_SIGNATURE_SECRET ?? process.env.SESSION_SECRET;
+  process.env.IMAGE_SIGNATURE_SECRET ??
+  process.env.SESSION_SECRET ??
+  "dev-gallery-signature";
 
-if (!SIGNING_SECRET) {
-  throw new Error("IMAGE_SIGNATURE_SECRET or SESSION_SECRET must be defined");
+if (!process.env.IMAGE_SIGNATURE_SECRET && !process.env.SESSION_SECRET) {
+  console.warn(
+    "IMAGE_SIGNATURE_SECRET or SESSION_SECRET is not defined; using a development fallback for image signatures."
+  );
 }
 
 type ImagePayload = {
@@ -43,15 +47,6 @@ const resolveFolderPath = (storedPath: string) => {
     ? path.normalize(normalized)
     : path.normalize(path.join(GALLERIES_FOLDER, normalized));
 };
-
-const buildDecoratedImageUrl = (
-  galleryId: number,
-  fileName: string,
-  signature: string
-) =>
-  `/api/decorate?galleryId=${galleryId}&file=${encodeURIComponent(
-    fileName
-  )}&sig=${signature}`;
 
 const buildImageUrl = (
   galleryId: number,
@@ -141,9 +136,8 @@ async function listImages(folderPath: string, galleryId: number) {
 
     const signature = signImageAccess(galleryId, file);
     const url = buildImageUrl(galleryId, file, signature);
-    const decoratedUrl = buildDecoratedImageUrl(galleryId, file, signature);
     images.push({
-      largeURL: decoratedUrl,
+      largeURL: url,
       thumbnailURL: url,
       width,
       height,

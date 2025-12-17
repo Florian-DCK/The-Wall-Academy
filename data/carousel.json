@@ -1,0 +1,38 @@
+[
+  {
+    "id": "t1",
+    "image": "/stage_01.jpeg",
+    "translationKey": "Carousel.captionChris",
+    "author": "Chris U12"
+  },
+  {
+    "id": "t2",
+    "image": "/stage_02.jpeg",
+    "translationKey": "Carousel.captionThomas",
+    "author": "Thomas U14"
+  },
+  {
+    "id": "t3",
+    "image": "/stage_03.jpeg",
+    "translationKey": "Carousel.captionCamille",
+    "author": "Camille U15"
+  },
+  {
+    "id": "t4",
+    "image": "/stage_04.jpeg",
+    "translationKey": "Carousel.captionCeline",
+    "author": "Céline U16"
+  },
+  {
+    "id": "t5",
+    "image": "/stage_05.jpeg",
+    "translationKey": "Carousel.captionHugo",
+    "author": "Hugo U16"
+  },
+  {
+    "id": "t6",
+    "image": "/stage_06.jpeg",
+    "translationKey": "Carousel.captionSarah",
+    "author": "Sarah U16"
+  }
+]
