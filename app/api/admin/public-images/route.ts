@@ -1,6 +1,7 @@
 import path from "path";
 import { promises as fs } from "node:fs";
 import type { Dirent } from "node:fs";
+import { randomUUID } from "node:crypto";
 
 import imageSize from "image-size";
 import { NextRequest, NextResponse } from "next/server";
@@ -10,6 +11,7 @@ import {
   DEFAULT_PUBLIC_UPLOAD_DIR,
   PUBLIC_ROOT,
   pathExists,
+  sanitizeSegment,
   sanitizeNestedRelativePath,
 } from "@/app/lib/media-manager";
 
@@ -319,6 +321,92 @@ export async function DELETE(request: NextRequest) {
     {
       message: `Image "${fileName}" supprimée.`,
       directory: normalizedRelativeDir,
+    },
+    { status: 200 }
+  );
+}
+
+export async function POST(request: NextRequest) {
+  const session = await getAdminSession();
+  if (!session) {
+    return NextResponse.json({ message: "Accès refusé." }, { status: 401 });
+  }
+
+  let formData: FormData;
+  try {
+    formData = await request.formData();
+  } catch {
+    return NextResponse.json({ message: "Requête invalide." }, { status: 400 });
+  }
+
+  const targetDirValue = formData.get("targetDir");
+  let relativeDir = DEFAULT_PUBLIC_UPLOAD_DIR;
+  if (typeof targetDirValue === "string" && targetDirValue.trim()) {
+    const sanitized = sanitizeNestedRelativePath(targetDirValue.trim());
+    if (!sanitized) {
+      return NextResponse.json(
+        { message: "Chemin de destination invalide." },
+        { status: 400 }
+      );
+    }
+    relativeDir = sanitized;
+  }
+
+  const files = formData
+    .getAll("files")
+    .filter((value): value is File => value instanceof File && value.size > 0);
+
+  if (!files.length) {
+    return NextResponse.json(
+      { message: "Ajoutez au moins une image." },
+      { status: 400 }
+    );
+  }
+
+  await fs.mkdir(PUBLIC_ROOT, { recursive: true });
+  const absoluteTarget = path.normalize(path.join(PUBLIC_ROOT, relativeDir));
+
+  if (!ensureWithinPublicRoot(absoluteTarget)) {
+    return NextResponse.json(
+      { message: "Chemin de dossier invalide." },
+      { status: 400 }
+    );
+  }
+
+  await fs.mkdir(absoluteTarget, { recursive: true });
+
+  const saved: string[] = [];
+  for (const file of files) {
+    try {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const ext = (path.extname(file.name) || ".bin").toLowerCase();
+      const safeBase =
+        sanitizeSegment(path.parse(file.name).name) ||
+        `asset-${randomUUID().slice(0, 8)}`;
+      let candidateName = `${safeBase}${ext}`;
+      let duplicate = 1;
+      while (await pathExists(path.join(absoluteTarget, candidateName))) {
+        candidateName = `${safeBase}-${duplicate++}${ext}`;
+      }
+      await fs.writeFile(path.join(absoluteTarget, candidateName), buffer);
+      saved.push(candidateName);
+    } catch (error) {
+      console.error("public-images POST", error);
+    }
+  }
+
+  if (!saved.length) {
+    return NextResponse.json(
+      { message: "Aucune image enregistrée." },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json(
+    {
+      message: `${saved.length} image(s) ajoutée(s).`,
+      saved,
+      directory: normalizeRelativeDir(relativeDir),
     },
     { status: 200 }
   );

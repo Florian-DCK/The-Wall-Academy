@@ -5,6 +5,12 @@ import { SUPPORTED_LOCALES } from "@/i18n/routing";
 import React, { ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
+// Highlight wrapper pour le bouton Gallery
+const Highlight = ({ children }: { children: React.ReactNode }) => (
+  <span className="text-white">
+    {children}
+  </span>
+);
 import type { EmblaOptionsType } from "embla-carousel";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -252,17 +258,28 @@ const Home = () => {
             </p>
           </div>
         </div>
-        <div className={"absolute top-8 right-10 flex gap-4 items-end"}>
-          {SUPPORTED_LOCALES.filter((item) => item !== lang).map((item, i) => (
+          <div className={"absolute top-8 right-10 flex gap-4 items-center"}>
+            {SUPPORTED_LOCALES.filter((item) => item !== lang).map((item, i) => (
+              <a
+                key={i}
+                href={`/${item}`}
+                className={"uppercase text-sm font-bold hover:underline"}
+              >
+                {item}
+              </a>
+            ))}
             <a
-              key={i}
-              href={`/${item}`}
-              className={"uppercase text-sm font-bold hover:underline"}
+              href={`/${lang}/gallery`}
+              className="ml-2"
             >
-              {item}
+              <Button
+                className="rounded-full px-6 py-3 text-sm font-heading tracking-[0.12em] uppercase shadow-[0_20px_45px_rgba(241,90,36,0.35)] bg-gradient-to-r from-[#ff8218] via-[#f15a24] to-[#c3200f] text-white hover:brightness-110 active:scale-95 border-none"
+                variant="default"
+              >
+                <Highlight>Gallery</Highlight>
+              </Button>
             </a>
-          ))}
-        </div>
+          </div>
       </section>
       <section
         id="mainCTA"

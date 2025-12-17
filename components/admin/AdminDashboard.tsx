@@ -231,10 +231,14 @@ export default function AdminDashboard(props: AdminDashboardProps) {
   );
   const [updateGalleryPasswordState, updateGalleryPasswordAction] =
     useActionState(updateGalleryPassword, initialFormState);
-  const [publicUploadState, publicUploadAction] = useActionState(
-    uploadPublicImages,
-    initialFormState
+  const [publicUploadState, setPublicUploadState] = useState<FormState | null>(
+    null
   );
+  const [isUploadingPublicImages, setIsUploadingPublicImages] = useState(false);
+  const [publicUploadProgress, setPublicUploadProgress] = useState<{
+    current: number;
+    total: number;
+  } | null>(null);
 
   const [activePanel, setActivePanel] = useState<AdminPanelKey>("translations");
 
@@ -705,6 +709,111 @@ export default function AdminDashboard(props: AdminDashboardProps) {
     [loadGalleryImages, router, selectedGalleryId]
   );
 
+  const handleUploadPublicImages = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      const form = event.currentTarget;
+      const targetDir =
+        (form.elements.namedItem("targetDir") as HTMLInputElement | null)
+          ?.value ?? "";
+
+      const filesInput = form.elements.namedItem("files") as
+        | HTMLInputElement
+        | null;
+      const files = filesInput?.files ? Array.from(filesInput.files) : [];
+
+      if (!files.length) {
+        setPublicUploadState({ error: "Ajoutez au moins une image." });
+        return;
+      }
+
+      const normalizedTargetDir =
+        normalizeDirectoryValue(targetDir) ||
+        normalizeDirectoryValue(publicUploadsDefault) ||
+        "";
+
+      setPublicUploadState(null);
+      setIsUploadingPublicImages(true);
+      setPublicUploadProgress({ current: 0, total: files.length });
+
+      const retryable = new Set([429, 502, 503, 504]);
+      const maxAttempts = 4;
+
+      const sleep = (ms: number) =>
+        new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+      const postOne = async (file: File) => {
+        let attempt = 0;
+        while (attempt < maxAttempts) {
+          attempt += 1;
+
+          const body = new FormData();
+          body.set("targetDir", targetDir);
+          body.append("files", file, file.name);
+
+          const response = await fetch("/api/admin/public-images", {
+            method: "POST",
+            body,
+            credentials: "include",
+          });
+
+          if (response.ok) {
+            return;
+          }
+
+          if (retryable.has(response.status) && attempt < maxAttempts) {
+            const baseDelay = 400 * Math.pow(2, attempt - 1);
+            const jitter = Math.floor(Math.random() * 200);
+            await sleep(baseDelay + jitter);
+            continue;
+          }
+
+          const payload = (await response.json().catch(() => null)) as
+            | { message?: string; error?: string }
+            | null;
+          const message =
+            typeof payload?.message === "string"
+              ? payload.message
+              : typeof payload?.error === "string"
+                ? payload.error
+                : `Upload impossible (HTTP ${response.status}).`;
+          throw new Error(message);
+        }
+      };
+
+      let uploaded = 0;
+      try {
+        for (const [index, file] of files.entries()) {
+          setPublicUploadProgress({ current: index, total: files.length });
+          await postOne(file);
+          uploaded += 1;
+          await sleep(75);
+        }
+
+        setPublicUploadState({
+          success: `${uploaded} image(s) ajoutée(s).`,
+        });
+
+        form.reset();
+        setSelectedPublicDir(normalizedTargetDir);
+        await loadPublicImages(normalizedTargetDir);
+      } catch (error) {
+        console.error("handleUploadPublicImages", error);
+        setPublicUploadState({
+          error:
+            error instanceof Error
+              ? error.message
+              : "Impossible d'importer les images.",
+        });
+      } finally {
+        setPublicUploadProgress(null);
+        setIsUploadingPublicImages(false);
+      }
+    },
+    [loadPublicImages, publicUploadsDefault]
+  );
+
   useEffect(() => {
     if (translationState?.success) {
       const trimmedKey = keyInput.trim();
@@ -745,13 +854,6 @@ export default function AdminDashboard(props: AdminDashboardProps) {
       router.refresh();
     }
   }, [updateGalleryPasswordState?.success, router]);
-
-  useEffect(() => {
-    if (publicUploadState?.success) {
-      publicUploadFormRef.current?.reset();
-      loadPublicImages(selectedPublicDir);
-    }
-  }, [publicUploadState?.success, selectedPublicDir, loadPublicImages]);
 
   useEffect(() => {
     if (deleteImageState?.success && selectedGalleryId) {
@@ -1294,7 +1396,7 @@ export default function AdminDashboard(props: AdminDashboardProps) {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         <form
           ref={publicUploadFormRef}
-          action={publicUploadAction}
+          onSubmit={handleUploadPublicImages}
           className="flex flex-col gap-3 rounded-lg border border-white/10 bg-black/40 p-4"
         >
           <label className="flex flex-col gap-1 text-sm font-medium">
@@ -1331,7 +1433,19 @@ export default function AdminDashboard(props: AdminDashboardProps) {
               {publicUploadState.success}
             </p>
           ) : null}
-          <SubmitButton>Ajouter au dossier public</SubmitButton>
+          {publicUploadProgress ? (
+            <p className="text-xs text-white/60">
+              Import en cours : {publicUploadProgress.current + 1}/
+              {publicUploadProgress.total}
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={isUploadingPublicImages}
+            className="rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isUploadingPublicImages ? "Import..." : "Ajouter au dossier public"}
+          </button>
         </form>
 
         <div className="flex flex-col gap-3 rounded-lg border border-white/10 bg-black/40 p-4">
