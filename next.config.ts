@@ -28,8 +28,9 @@ const nextConfig: NextConfig = {
     viewTransition: true,
     workerThreads: false,
     cpus: 1,
+    proxyClientMaxBodySize: "99mb",
     serverActions: {
-      bodySizeLimit: "32mb",
+      bodySizeLimit: "99mb",
     },
   },
 };

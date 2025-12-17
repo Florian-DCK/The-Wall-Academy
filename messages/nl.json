@@ -1,6 +1,20 @@
 {
   "Home": {
-    "title": "mijn<br></br>doel:<br></br>de<br></br><highlight>beste</highlight><br></br><highlight>keepers</highlight><br></br>trainen."
+    "title": "mijn<br></br>doel:<br></br>de<br></br><highlight>beste</highlight><br></br><highlight>keepers</highlight><br></br>trainen.",
+    "CTA": "Ik schrijf me in!",
+    "Footer": {
+      "social": {
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "youtube": "YouTube"
+      }
+    },
+    "WhatIs": {
+      "WhatIsItems": {
+        "atelierDescription": "Ontdek de geheimen van de kampioen door middel van speciale workshops."
+      }
+    }
   },
   "Gallery": {
     "title": "Krijg toegang tot elk iconisch moment<br></br>van hun avontuur.",

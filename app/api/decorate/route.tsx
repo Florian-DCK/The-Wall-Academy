@@ -2,7 +2,6 @@ import path from "node:path";
 import { promises as fs } from "node:fs";
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-import sharp from "sharp";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
@@ -26,22 +25,6 @@ const SIGNING_SECRET =
 if (!SIGNING_SECRET) {
   throw new Error("IMAGE_SIGNATURE_SECRET or SESSION_SECRET must be defined");
 }
-
-// chemin du frame 9-slice (mets ton PNG ici)
-const FRAME_PATH = path.join(
-  process.cwd(),
-  "public",
-  "frames",
-  "frame_9slice.png"
-);
-
-// DOIVENT matcher ce que tu as fait dans Figma
-const FRAME_BORDERS = {
-  top: 75,
-  right: 131,
-  bottom: 75,
-  left: 75,
-};
 
 const resolveFolderPath = (storedPath: string) => {
   const normalized = storedPath.trim();
@@ -77,6 +60,27 @@ const verifyImageSignature = (
     return timingSafeEqual(providedBuffer, expectedBuffer);
   } catch {
     return false;
+  }
+};
+
+const getMimeType = (filePath: string) => {
+  switch (path.extname(filePath).toLowerCase()) {
+    case ".jpg":
+    case ".jpeg":
+      return "image/jpeg";
+    case ".png":
+      return "image/png";
+    case ".gif":
+      return "image/gif";
+    case ".webp":
+      return "image/webp";
+    case ".bmp":
+      return "image/bmp";
+    case ".tiff":
+    case ".tif":
+      return "image/tiff";
+    default:
+      return "application/octet-stream";
   }
 };
 
@@ -148,7 +152,7 @@ export async function GET(request: NextRequest) {
 
     const galleryRecord = await prisma.gallery.findUnique({
       where: { id: galleryId },
-      select: { id: true, photosPath: true, date: true },
+      select: { id: true, photosPath: true },
     });
 
     if (!galleryRecord) {
@@ -198,224 +202,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ message: "Image not found" }, { status: 404 });
     }
 
-    // --- Décoration 9-slice ---
-
-    // 1) Taille de l'image de base
-    const baseMeta = await sharp(absoluteFile).metadata();
-    if (!baseMeta.width || !baseMeta.height) {
-      return NextResponse.json(
-        { message: "Invalid base image" },
-        { status: 500 }
-      );
-    }
-    const targetWidth = baseMeta.width;
-    const targetHeight = baseMeta.height;
-
-    // 2) Charger le frame
-    const frameBuffer = await fs.readFile(FRAME_PATH);
-    const frameMeta = await sharp(frameBuffer).metadata();
-    if (!frameMeta.width || !frameMeta.height) {
-      return NextResponse.json(
-        { message: "Invalid frame image" },
-        { status: 500 }
-      );
-    }
-
-    const W0 = frameMeta.width;
-    const H0 = frameMeta.height;
-
-    const { top, right, bottom, left } = FRAME_BORDERS;
-
-    const centerSrcWidth = W0 - left - right;
-    const centerSrcHeight = H0 - top - bottom;
-
-    const centerDestWidth = targetWidth - left - right;
-    const centerDestHeight = targetHeight - top - bottom;
-
-    if (
-      centerSrcWidth <= 0 ||
-      centerSrcHeight <= 0 ||
-      centerDestWidth <= 0 ||
-      centerDestHeight <= 0
-    ) {
-      return NextResponse.json(
-        { message: "Invalid borders vs image size" },
-        { status: 500 }
-      );
-    }
-
-    type SliceDef = {
-      srcLeft: number;
-      srcTop: number;
-      srcWidth: number;
-      srcHeight: number;
-      destLeft: number;
-      destTop: number;
-      destWidth: number;
-      destHeight: number;
-    };
-
-    const slices: SliceDef[] = [
-      // TL
-      {
-        srcLeft: 0,
-        srcTop: 0,
-        srcWidth: left,
-        srcHeight: top,
-        destLeft: 0,
-        destTop: 0,
-        destWidth: left,
-        destHeight: top,
-      },
-      // T
-      {
-        srcLeft: left,
-        srcTop: 0,
-        srcWidth: centerSrcWidth,
-        srcHeight: top,
-        destLeft: left,
-        destTop: 0,
-        destWidth: centerDestWidth,
-        destHeight: top,
-      },
-      // TR
-      {
-        srcLeft: W0 - right,
-        srcTop: 0,
-        srcWidth: right,
-        srcHeight: top,
-        destLeft: targetWidth - right,
-        destTop: 0,
-        destWidth: right,
-        destHeight: top,
-      },
-      // L
-      {
-        srcLeft: 0,
-        srcTop: top,
-        srcWidth: left,
-        srcHeight: centerSrcHeight,
-        destLeft: 0,
-        destTop: top,
-        destWidth: left,
-        destHeight: centerDestHeight,
-      },
-      // R
-      {
-        srcLeft: W0 - right,
-        srcTop: top,
-        srcWidth: right,
-        srcHeight: centerSrcHeight,
-        destLeft: targetWidth - right,
-        destTop: top,
-        destWidth: right,
-        destHeight: centerDestHeight,
-      },
-      // BL
-      {
-        srcLeft: 0,
-        srcTop: H0 - bottom,
-        srcWidth: left,
-        srcHeight: bottom,
-        destLeft: 0,
-        destTop: targetHeight - bottom,
-        destWidth: left,
-        destHeight: bottom,
-      },
-      // B
-      {
-        srcLeft: left,
-        srcTop: H0 - bottom,
-        srcWidth: centerSrcWidth,
-        srcHeight: bottom,
-        destLeft: left,
-        destTop: targetHeight - bottom,
-        destWidth: centerDestWidth,
-        destHeight: bottom,
-      },
-      // BR
-      {
-        srcLeft: W0 - right,
-        srcTop: H0 - bottom,
-        srcWidth: right,
-        srcHeight: bottom,
-        destLeft: targetWidth - right,
-        destTop: targetHeight - bottom,
-        destWidth: right,
-        destHeight: bottom,
-      },
-    ];
-
-    const overlays = await Promise.all(
-      slices.map(async (s) => {
-        const sliceBuf = await sharp(frameBuffer)
-          .extract({
-            left: s.srcLeft,
-            top: s.srcTop,
-            width: s.srcWidth,
-            height: s.srcHeight,
-          })
-          .resize(s.destWidth, s.destHeight)
-          .toBuffer();
-
-        return {
-          input: sliceBuf,
-          left: s.destLeft,
-          top: s.destTop,
-        } as sharp.OverlayOptions;
-      })
-    );
-
-    // Date dynamique (ajuste x/y selon ton design)
-    const date = (galleryRecord.date ?? "").toString().trim();
-
-    const dateSvg = `
-      <svg width="${targetWidth}" height="${targetHeight}">
-        <style>
-          .date {
-            fill: #ffffff;
-            opacity: 0.4;
-            font-size: 24px;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-          }
-        </style>
-        <text
-          x="${targetWidth - 20}"
-          y="${targetHeight - 10}"
-          text-anchor="end"
-          class="date"
-        >
-          ${date}
-        </text>
-      </svg>
-    `;
-    const dateLayer = Buffer.from(dateSvg);
-
-    // Image de base
-    const baseBuffer = await sharp(absoluteFile)
-      .resize(targetWidth, targetHeight, {
-        fit: "cover",
-        position: "centre",
-      })
-      .toBuffer();
-
-    const finalBuffer = await sharp(baseBuffer)
-      .composite([...overlays, { input: dateLayer, blend: "over" }])
-      .png()
-      .toBuffer();
-
-    return new NextResponse(finalBuffer as any, {
+    const buffer = await fs.readFile(absoluteFile);
+    return new NextResponse(buffer, {
       status: 200,
       headers: {
-        "Content-Type": "image/png",
+        "Content-Type": getMimeType(absoluteFile),
         "Cache-Control": "public, max-age=60",
       },
     });
+
   } catch (error) {
     const errMsg = error instanceof Error ? error.message : String(error);
     console.error("decorate error", errMsg);
     return NextResponse.json(
-      { message: "Unable to decorate image", error: errMsg },
+      { message: "Unable to load image", error: errMsg },
       { status: 500 }
     );
   }

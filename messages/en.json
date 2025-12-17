@@ -1,6 +1,20 @@
 {
   "Home": {
-    "title": "my<br></br>goal:<br></br>get the<br></br><highlight>best</highlight><br></br><highlight>keepers</highlight><br></br>out."
+    "title": "my<br></br>goal:<br></br>get the<br></br><highlight>best</highlight><br></br><highlight>keepers</highlight><br></br>out.",
+    "CTA": "I'm signing up",
+    "Footer": {
+      "social": {
+        "facebook": "Facebook",
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "youtube": "YouTube"
+      }
+    },
+    "WhatIs": {
+      "WhatIsItems": {
+        "atelierDescription": "Discover the secrets of champions through special workshops."
+      }
+    }
   },
   "Gallery": {
     "title": "Access every iconic moment<br></br>from their adventure.",
@@ -9,7 +23,6 @@
     "selectPlaceholder": "Select a camp",
     "selectAnotherPlaceholder": "Select another camp",
     "passwordPlaceholder": "Enter the password",
-
     "passwordLabel": "Password",
     "selectLabel": "Camp",
     "buttonSubmit": "Access the photos!",

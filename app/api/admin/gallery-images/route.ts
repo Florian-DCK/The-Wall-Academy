@@ -1,5 +1,6 @@
 import path from "path";
 import { createHmac } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { promises as fs } from "node:fs";
 
 import imageSize from "image-size";
@@ -7,7 +8,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { PrismaClient } from "@/app/generated/prisma-client/client";
 import { getAdminSession } from "@/app/lib/admin-auth";
-import { pathExists, resolveGalleryFolder } from "@/app/lib/media-manager";
+import {
+  GALLERIES_BASE,
+  pathExists,
+  resolveGalleryFolder,
+  sanitizeSegment,
+} from "@/app/lib/media-manager";
 
 const prisma = new PrismaClient();
 const IMAGE_EXT = /\.(?:jpe?g|png|webp|gif|bmp|tiff)$/i;
@@ -34,15 +40,6 @@ const buildImageUrl = (
   signature: string
 ) =>
   `/api/images?galleryId=${galleryId}&file=${encodeURIComponent(
-    fileName
-  )}&sig=${signature}`;
-
-const buildDecoratedImageUrl = (
-  galleryId: number,
-  fileName: string,
-  signature: string
-) =>
-  `/api/decorate?galleryId=${galleryId}&file=${encodeURIComponent(
     fileName
   )}&sig=${signature}`;
 
@@ -104,7 +101,7 @@ const listGalleryImages = async (galleryId: number, folderPath: string) => {
       height,
       size: stat.size,
       thumbnailURL: buildImageUrl(galleryId, file, signature),
-      largeURL: buildDecoratedImageUrl(galleryId, file, signature),
+      largeURL: buildImageUrl(galleryId, file, signature),
     });
   }
 
@@ -250,6 +247,123 @@ export async function DELETE(request: NextRequest) {
   return NextResponse.json(
     {
       message: `Image "${fileName}" supprimée.`,
+    },
+    { status: 200 }
+  );
+}
+
+export async function POST(request: NextRequest) {
+  const session = await getAdminSession();
+  if (!session) {
+    return NextResponse.json({ message: "Accès refusé." }, { status: 401 });
+  }
+
+  let formData: FormData;
+  try {
+    formData = await request.formData();
+  } catch {
+    return NextResponse.json({ message: "Requête invalide." }, { status: 400 });
+  }
+
+  const galleryIdValue = formData.get("galleryId");
+  if (typeof galleryIdValue !== "string" || !galleryIdValue.trim()) {
+    return NextResponse.json(
+      { message: "Le paramètre galleryId est requis." },
+      { status: 400 }
+    );
+  }
+
+  const galleryId = Number(galleryIdValue);
+  if (!Number.isInteger(galleryId) || galleryId <= 0) {
+    return NextResponse.json(
+      { message: "Identifiant de galerie invalide." },
+      { status: 400 }
+    );
+  }
+
+  const files = formData
+    .getAll("files")
+    .filter((value): value is File => value instanceof File && value.size > 0);
+
+  if (!files.length) {
+    return NextResponse.json(
+      { message: "Ajoutez au moins une image." },
+      { status: 400 }
+    );
+  }
+
+  const galleryRecord = await prisma.gallery.findUnique({
+    where: { id: galleryId },
+    select: { id: true, title: true, photosPath: true },
+  });
+
+  if (!galleryRecord) {
+    return NextResponse.json(
+      { message: "Galerie introuvable." },
+      { status: 404 }
+    );
+  }
+
+  await fs.mkdir(GALLERIES_BASE, { recursive: true });
+
+  let storedPath = galleryRecord.photosPath?.trim() ?? "";
+  if (!storedPath) {
+    const baseSegment =
+      sanitizeSegment(`gallery-${galleryRecord.id}`) ||
+      `gallery-${galleryRecord.id}`;
+    let candidate = baseSegment;
+    let suffix = 1;
+    while (await pathExists(path.join(GALLERIES_BASE, candidate))) {
+      candidate = `${baseSegment}-${suffix++}`;
+    }
+    storedPath = candidate;
+    await prisma.gallery.update({
+      where: { id: galleryRecord.id },
+      data: { photosPath: storedPath },
+    });
+  }
+
+  const absoluteFolder = resolveGalleryFolder(storedPath);
+  if (!absoluteFolder) {
+    return NextResponse.json(
+      { message: "Impossible de déterminer le dossier cible." },
+      { status: 500 }
+    );
+  }
+
+  await fs.mkdir(absoluteFolder, { recursive: true });
+
+  const saved: string[] = [];
+  for (const file of files) {
+    try {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const ext = (path.extname(file.name) || ".bin").toLowerCase();
+      const safeBase =
+        sanitizeSegment(path.parse(file.name).name) ||
+        `image-${randomUUID().slice(0, 8)}`;
+      let candidateName = `${safeBase}${ext}`;
+      let duplicate = 1;
+      while (await pathExists(path.join(absoluteFolder, candidateName))) {
+        candidateName = `${safeBase}-${duplicate++}${ext}`;
+      }
+      await fs.writeFile(path.join(absoluteFolder, candidateName), buffer);
+      saved.push(candidateName);
+    } catch (error) {
+      console.error("gallery-images POST", error);
+    }
+  }
+
+  if (!saved.length) {
+    return NextResponse.json(
+      { message: "Aucune image enregistrée." },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json(
+    {
+      message: `${saved.length} image(s) ajoutée(s) à ${galleryRecord.title}.`,
+      saved,
     },
     { status: 200 }
   );

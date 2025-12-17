@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type FormEvent,
   type ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
@@ -31,6 +32,7 @@ export type CarouselItem = {
 export type GallerySummary = {
   id: number;
   title: string;
+  password: string;
   photosPath: string | null;
   createdAt: string;
   date: string | null;
@@ -84,6 +86,8 @@ type AdminDashboardProps = {
   upsertCarouselItem: ActionHandler;
   deleteCarouselItem: ActionHandler;
   createGallery: ActionHandler;
+  deleteGallery: ActionHandler;
+  updateGalleryPassword: ActionHandler;
   uploadGalleryImages: ActionHandler;
   uploadPublicImages: ActionHandler;
   logout: () => Promise<void> | void;
@@ -191,7 +195,8 @@ export default function AdminDashboard(props: AdminDashboardProps) {
     upsertCarouselItem,
     deleteCarouselItem,
     createGallery,
-    uploadGalleryImages,
+    deleteGallery,
+    updateGalleryPassword,
     uploadPublicImages,
     logout,
   } = props;
@@ -220,10 +225,12 @@ export default function AdminDashboard(props: AdminDashboardProps) {
     createGallery,
     initialFormState
   );
-  const [galleryUploadState, galleryUploadAction] = useActionState(
-    uploadGalleryImages,
+  const [deleteGalleryState, deleteGalleryAction] = useActionState(
+    deleteGallery,
     initialFormState
   );
+  const [updateGalleryPasswordState, updateGalleryPasswordAction] =
+    useActionState(updateGalleryPassword, initialFormState);
   const [publicUploadState, publicUploadAction] = useActionState(
     uploadPublicImages,
     initialFormState
@@ -302,11 +309,23 @@ export default function AdminDashboard(props: AdminDashboardProps) {
   const [selectedGalleryId, setSelectedGalleryId] = useState<string>(() =>
     galleries[0]?.id ? String(galleries[0].id) : ""
   );
+  const [passwordUpdateTarget, setPasswordUpdateTarget] = useState<
+    string | null
+  >(null);
   const [galleryImages, setGalleryImages] = useState<GalleryImageAsset[]>([]);
   const [galleryImagesError, setGalleryImagesError] = useState<string | null>(
     null
   );
   const [isLoadingGalleryImages, setIsLoadingGalleryImages] = useState(false);
+  const [galleryUploadState, setGalleryUploadState] = useState<FormState | null>(
+    null
+  );
+  const [isUploadingGalleryImages, setIsUploadingGalleryImages] =
+    useState(false);
+  const [galleryUploadProgress, setGalleryUploadProgress] = useState<{
+    current: number;
+    total: number;
+  } | null>(null);
 
   const [selectedPublicDir, setSelectedPublicDir] = useState<string>(
     () => normalizedDefaultPublicDir
@@ -571,6 +590,121 @@ export default function AdminDashboard(props: AdminDashboardProps) {
     []
   );
 
+  const handleDeleteGallerySubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      if (!selectedGalleryId) {
+        event.preventDefault();
+        return;
+      }
+
+      const form = event.currentTarget;
+      const deleteFiles = (
+        form.elements.namedItem("deleteFiles") as HTMLInputElement | null
+      )?.checked;
+      const selectedGallery = galleries.find(
+        (gallery) => String(gallery.id) === selectedGalleryId
+      );
+      const title = selectedGallery?.title ?? "cette galerie";
+      const message = deleteFiles
+        ? `Supprimer la galerie "${title}" et son dossier d'images ?`
+        : `Supprimer la galerie "${title}" ?`;
+
+      if (!window.confirm(message)) {
+        event.preventDefault();
+      }
+    },
+    [galleries, selectedGalleryId]
+  );
+
+  const handleUpdateGalleryPasswordSubmit = useCallback(
+    (event: FormEvent<HTMLFormElement>) => {
+      const form = event.currentTarget;
+      const galleryId = (
+        form.elements.namedItem("galleryId") as HTMLInputElement | null
+      )?.value;
+      setPasswordUpdateTarget(galleryId?.trim() || null);
+    },
+    []
+  );
+
+  const handleUploadGalleryImages = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      if (!selectedGalleryId) {
+        setGalleryUploadState({ error: "Sélectionnez une galerie." });
+        return;
+      }
+
+      const form = event.currentTarget;
+      const filesInput = form.elements.namedItem("files") as
+        | HTMLInputElement
+        | null;
+      const files = filesInput?.files ? Array.from(filesInput.files) : [];
+
+      if (!files.length) {
+        setGalleryUploadState({ error: "Ajoutez au moins une image." });
+        return;
+      }
+
+      setGalleryUploadState(null);
+      setIsUploadingGalleryImages(true);
+      setGalleryUploadProgress({ current: 0, total: files.length });
+
+      let uploaded = 0;
+
+      try {
+        for (const [index, file] of files.entries()) {
+          setGalleryUploadProgress({ current: index, total: files.length });
+
+          const body = new FormData();
+          body.set("galleryId", selectedGalleryId);
+          body.append("files", file, file.name);
+
+          const response = await fetch("/api/admin/gallery-images", {
+            method: "POST",
+            body,
+            credentials: "include",
+          });
+
+          const payload = (await response.json().catch(() => null)) as
+            | { message?: string }
+            | null;
+
+          if (!response.ok) {
+            const message =
+              typeof payload?.message === "string"
+                ? payload.message
+                : "Impossible d'importer les images.";
+            setGalleryUploadState({ error: message });
+            return;
+          }
+
+          uploaded += 1;
+        }
+
+        setGalleryUploadState({
+          success: `${uploaded} image(s) ajoutée(s).`,
+        });
+        form.reset();
+
+        if (selectedGalleryId) {
+          await loadGalleryImages(selectedGalleryId);
+        }
+        router.refresh();
+      } catch (error) {
+        console.error("handleUploadGalleryImages", error);
+        setGalleryUploadState({
+          error: "Impossible d'importer les images.",
+        });
+      } finally {
+        setGalleryUploadProgress(null);
+        setIsUploadingGalleryImages(false);
+      }
+    },
+    [loadGalleryImages, router, selectedGalleryId]
+  );
+
   useEffect(() => {
     if (translationState?.success) {
       const trimmedKey = keyInput.trim();
@@ -601,19 +735,16 @@ export default function AdminDashboard(props: AdminDashboardProps) {
   }, [createGalleryState?.success, router]);
 
   useEffect(() => {
-    if (galleryUploadState?.success) {
-      galleryUploadFormRef.current?.reset();
-      if (selectedGalleryId) {
-        loadGalleryImages(selectedGalleryId);
-      }
+    if (deleteGalleryState?.success) {
       router.refresh();
     }
-  }, [
-    galleryUploadState?.success,
-    router,
-    selectedGalleryId,
-    loadGalleryImages,
-  ]);
+  }, [deleteGalleryState?.success, router]);
+
+  useEffect(() => {
+    if (updateGalleryPasswordState?.success) {
+      router.refresh();
+    }
+  }, [updateGalleryPasswordState?.success, router]);
 
   useEffect(() => {
     if (publicUploadState?.success) {
@@ -715,7 +846,7 @@ export default function AdminDashboard(props: AdminDashboardProps) {
               value={keyInput}
               onChange={(event) => setKeyInput(event.target.value)}
               placeholder="Example: Home.title"
-              className="rounded-lg border border-white/15 bg-black/60 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              className="w-full rounded-lg border border-white/15 bg-black/60 px-3 py-2 text-sm focus:border-primary focus:outline-none"
               required
             />
           </label>
@@ -740,8 +871,7 @@ export default function AdminDashboard(props: AdminDashboardProps) {
                     handleValueChange(code, event.target.value)
                   }
                   rows={4}
-                  className="min-h-32 rounded-lg border border-white/15 bg-black/60 px-3 py-2 text-sm focus:border-primary focus:outline-none"
-                  required
+                  className="min-h-32 w-full rounded-lg border border-white/15 bg-black/60 px-3 py-2 text-sm focus:border-primary focus:outline-none"
                 />
               </label>
             ))}
@@ -794,6 +924,12 @@ export default function AdminDashboard(props: AdminDashboardProps) {
                               {gallery.title}
                             </p>
                             <p className="text-xs text-white/60">
+                              Mot de passe :{" "}
+                              <code className="font-mono text-[0.75rem] text-white/80">
+                                {gallery.password}
+                              </code>
+                            </p>
+                            <p className="text-xs text-white/60">
                               Créée le{" "}
                               {dateFormatter.format(
                                 new Date(gallery.createdAt)
@@ -819,6 +955,39 @@ export default function AdminDashboard(props: AdminDashboardProps) {
                             #{gallery.id}
                           </span>
                         </div>
+                        <form
+                          action={updateGalleryPasswordAction}
+                          onSubmit={handleUpdateGalleryPasswordSubmit}
+                          className="mt-3 flex flex-col gap-2 rounded-lg border border-white/10 bg-black/40 p-3"
+                        >
+                          <input
+                            type="hidden"
+                            name="galleryId"
+                            value={gallery.id}
+                          />
+                          <label className="flex flex-col gap-1 text-xs font-medium">
+                            Nouveau mot de passe
+                            <input
+                              name="password"
+                              type="text"
+                              required
+                              className="rounded-lg border border-white/15 bg-black/60 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+                            />
+                          </label>
+                          {passwordUpdateTarget === String(gallery.id) &&
+                          updateGalleryPasswordState?.error ? (
+                            <p className="rounded-md bg-red-500/15 px-3 py-2 text-sm text-red-300">
+                              {updateGalleryPasswordState.error}
+                            </p>
+                          ) : null}
+                          {passwordUpdateTarget === String(gallery.id) &&
+                          updateGalleryPasswordState?.success ? (
+                            <p className="rounded-md bg-emerald-500/15 px-3 py-2 text-sm text-emerald-300">
+                              {updateGalleryPasswordState.success}
+                            </p>
+                          ) : null}
+                          <SubmitButton>Modifier</SubmitButton>
+                        </form>
                       </li>
                     );
                   })}
@@ -829,6 +998,61 @@ export default function AdminDashboard(props: AdminDashboardProps) {
                 </p>
               )}
             </div>
+            <form
+              action={deleteGalleryAction}
+              onSubmit={handleDeleteGallerySubmit}
+              className="flex flex-col gap-3 rounded-lg border border-white/10 bg-black/40 p-4"
+            >
+              <h3 className="text-lg font-semibold">Supprimer une galerie</h3>
+              <label className="flex flex-col gap-1 text-sm font-medium">
+                Album
+                <select
+                  name="galleryId"
+                  value={selectedGalleryId}
+                  onChange={(event) => setSelectedGalleryId(event.target.value)}
+                  className="rounded-lg border border-white/15 bg-black/60 px-3 py-2 text-sm focus:border-primary focus:outline-none"
+                  required
+                  disabled={!galleries.length}
+                >
+                  {galleries.map((gallery) => (
+                    <option key={gallery.id} value={gallery.id}>
+                      {gallery.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {!galleries.length ? (
+                <p className="text-xs text-amber-300">
+                  Aucune galerie a supprimer pour le moment.
+                </p>
+              ) : null}
+              <label className="flex items-start gap-2 text-xs text-white/70">
+                <input
+                  type="checkbox"
+                  name="deleteFiles"
+                  value="1"
+                  disabled={!galleries.length}
+                  className="mt-0.5 rounded border-white/20 bg-black/60 text-red-400 focus:ring-2 focus:ring-red-500"
+                />
+                Supprimer aussi le dossier et toutes les images.
+              </label>
+              <p className="text-xs text-white/60">
+                Cette action est irreversible.
+              </p>
+              {deleteGalleryState?.error ? (
+                <p className="rounded-md bg-red-500/15 px-3 py-2 text-sm text-red-300">
+                  {deleteGalleryState.error}
+                </p>
+              ) : null}
+              {deleteGalleryState?.success ? (
+                <p className="rounded-md bg-emerald-500/15 px-3 py-2 text-sm text-emerald-300">
+                  {deleteGalleryState.success}
+                </p>
+              ) : null}
+              <DeleteGalleryButton disabled={!galleries.length}>
+                Supprimer la galerie
+              </DeleteGalleryButton>
+            </form>
           </div>
           <form
             ref={createGalleryFormRef}
@@ -899,13 +1123,14 @@ export default function AdminDashboard(props: AdminDashboardProps) {
         </header>
         <form
           ref={galleryUploadFormRef}
-          action={galleryUploadAction}
+          onSubmit={handleUploadGalleryImages}
           className="flex flex-col gap-3 rounded-lg border border-white/10 bg-black/40 p-4"
         >
+          <input type="hidden" name="galleryId" value={selectedGalleryId} />
           <label className="flex flex-col gap-1 text-sm font-medium">
             Album
             <select
-              name="galleryId"
+              name="__galleryId"
               value={selectedGalleryId}
               onChange={(event) => setSelectedGalleryId(event.target.value)}
               className="rounded-lg border border-white/15 bg-black/60 px-3 py-2 text-sm focus:border-primary focus:outline-none"
@@ -946,7 +1171,19 @@ export default function AdminDashboard(props: AdminDashboardProps) {
               {galleryUploadState.success}
             </p>
           ) : null}
-          <SubmitButton>Importer les images</SubmitButton>
+          {galleryUploadProgress ? (
+            <p className="text-xs text-white/60">
+              Import en cours : {galleryUploadProgress.current + 1}/
+              {galleryUploadProgress.total}
+            </p>
+          ) : null}
+          <button
+            type="submit"
+            disabled={isUploadingGalleryImages || !galleries.length}
+            className="rounded-lg bg-primary px-4 py-2 font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isUploadingGalleryImages ? "Import..." : "Importer les images"}
+          </button>
         </form>
       </section>
 
@@ -1421,6 +1658,25 @@ function DeleteButton() {
       className="mt-2 w-full rounded-lg border border-red-500/60 px-4 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-70"
     >
       {pending ? "Suppression…" : "Supprimer"}
+    </button>
+  );
+}
+
+function DeleteGalleryButton({
+  children,
+  disabled,
+}: {
+  children?: ReactNode;
+  disabled?: boolean;
+}) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending || disabled}
+      className="mt-2 w-full rounded-lg border border-red-500/60 px-4 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-70"
+    >
+      {pending ? "Suppression..." : children ?? "Supprimer"}
     </button>
   );
 }

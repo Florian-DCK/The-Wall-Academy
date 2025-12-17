@@ -199,6 +199,179 @@ async function createGalleryAction(
   return { success: `Galerie "${title.trim()}" créée.` };
 }
 
+async function deleteGalleryAction(
+  locale: string,
+  _prevState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  "use server";
+
+  const session = await getAdminSession();
+  if (!session) {
+    return { error: "Acces refuse." };
+  }
+
+  const galleryIdValue =
+    formData.get("galleryId") ?? formData.get("__galleryId");
+  if (typeof galleryIdValue !== "string" || !galleryIdValue.trim()) {
+    return { error: "Selectionnez une galerie." };
+  }
+
+  const galleryId = Number(galleryIdValue);
+  if (!Number.isInteger(galleryId) || galleryId <= 0) {
+    return { error: "Identifiant de galerie invalide." };
+  }
+
+  const deleteFilesValue = formData.get("deleteFiles");
+  const shouldDeleteFiles =
+    typeof deleteFilesValue === "string" &&
+    ["1", "true", "on"].includes(deleteFilesValue);
+
+  const galleryRecord = await prisma.gallery.findUnique({
+    where: { id: galleryId },
+    select: { id: true, title: true, photosPath: true },
+  });
+
+  if (!galleryRecord) {
+    return { error: "Galerie introuvable." };
+  }
+
+  let folderSuffix = "";
+  let folderPathToDelete: string | null = null;
+  if (shouldDeleteFiles) {
+    const folderPath = resolveGalleryFolder(galleryRecord.photosPath);
+    if (!folderPath) {
+      folderSuffix = " Aucun dossier configure.";
+    } else {
+      const normalizedFolder = path.normalize(folderPath);
+      const normalizedBase = path.normalize(GALLERIES_BASE);
+      const baseWithSep = normalizedBase.endsWith(path.sep)
+        ? normalizedBase
+        : normalizedBase + path.sep;
+      const folderWithSep = normalizedFolder.endsWith(path.sep)
+        ? normalizedFolder
+        : normalizedFolder + path.sep;
+      const baseWithSepLower = baseWithSep.toLowerCase();
+      const folderWithSepLower = folderWithSep.toLowerCase();
+
+      if (folderWithSepLower === baseWithSepLower) {
+        return {
+          error: "Suppression refusee : dossier de galerie invalide.",
+        };
+      }
+
+      if (!folderWithSepLower.startsWith(baseWithSepLower)) {
+        return {
+          error:
+            "Suppression refusee : dossier de galerie hors du repertoire autorise.",
+        };
+      }
+
+      folderPathToDelete = normalizedFolder;
+    }
+  }
+
+  try {
+    await prisma.gallery.delete({ where: { id: galleryId } });
+  } catch (error) {
+    console.error("deleteGalleryAction", error);
+    return {
+      error: "Impossible de supprimer la galerie. Consultez les logs.",
+    };
+  }
+
+  if (shouldDeleteFiles && folderPathToDelete) {
+    const exists = await pathExists(folderPathToDelete);
+    if (exists) {
+      const stat = await fs.stat(folderPathToDelete).catch(() => null);
+      if (!stat || !stat.isDirectory()) {
+        folderSuffix = " Dossier introuvable.";
+      } else {
+        try {
+          await fs.rm(folderPathToDelete, { recursive: true, force: true });
+          folderSuffix = " Dossier supprime.";
+        } catch (error) {
+          console.error("deleteGalleryAction:deleteFolder", error);
+          folderSuffix = " Suppression du dossier impossible.";
+        }
+      }
+    } else {
+      folderSuffix = " Dossier introuvable.";
+    }
+  }
+
+  for (const code of SUPPORTED_LOCALES) {
+    revalidatePath(`/${code}/gallery`);
+    revalidatePath(`/${code}/admin`);
+  }
+
+  return {
+    success: `Galerie "${galleryRecord.title}" supprimee.${folderSuffix}`,
+  };
+}
+
+async function updateGalleryPasswordAction(
+  locale: string,
+  _prevState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  "use server";
+
+  const session = await getAdminSession();
+  if (!session) {
+    return { error: "Acces refuse." };
+  }
+
+  const galleryIdValue = formData.get("galleryId");
+  if (typeof galleryIdValue !== "string" || !galleryIdValue.trim()) {
+    return { error: "Selectionnez une galerie." };
+  }
+
+  const galleryId = Number(galleryIdValue);
+  if (!Number.isInteger(galleryId) || galleryId <= 0) {
+    return { error: "Identifiant de galerie invalide." };
+  }
+
+  const passwordValue = formData.get("password");
+  if (typeof passwordValue !== "string" || !passwordValue.trim()) {
+    return { error: "Le mot de passe est requis." };
+  }
+
+  try {
+    const updated = await prisma.gallery.update({
+      where: { id: galleryId },
+      data: { password: passwordValue.trim() },
+      select: { title: true },
+    });
+
+    for (const code of SUPPORTED_LOCALES) {
+      revalidatePath(`/${code}/gallery`);
+      revalidatePath(`/${code}/admin`);
+    }
+
+    return { success: `Mot de passe mis a jour pour "${updated.title}".` };
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return {
+        error: "Ce mot de passe est deja utilise par une autre galerie.",
+      };
+    }
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2025"
+    ) {
+      return { error: "Galerie introuvable." };
+    }
+    console.error("updateGalleryPasswordAction", error);
+    return {
+      error: "Impossible de modifier le mot de passe. Consultez les logs.",
+    };
+  }
+}
+
 async function uploadGalleryImagesAction(
   locale: string,
   _prevState: FormState,
@@ -211,7 +384,8 @@ async function uploadGalleryImagesAction(
     return { error: "Accès refusé." };
   }
 
-  const galleryIdValue = formData.get("galleryId");
+  const galleryIdValue =
+    formData.get("galleryId") ?? formData.get("__galleryId");
   if (typeof galleryIdValue !== "string" || !galleryIdValue.trim()) {
     return { error: "Sélectionnez une galerie." };
   }
@@ -645,6 +819,7 @@ export default async function AdminPage({ params }: PageProps) {
     select: {
       id: true,
       title: true,
+      password: true,
       photosPath: true,
       createdAt: true,
       date: true,
@@ -654,6 +829,7 @@ export default async function AdminPage({ params }: PageProps) {
   const galleries: GallerySummary[] = galleriesData.map((gallery) => ({
     id: gallery.id,
     title: gallery.title,
+    password: gallery.password,
     photosPath: gallery.photosPath,
     createdAt: gallery.createdAt.toISOString(),
     date: gallery.date,
@@ -687,6 +863,8 @@ export default async function AdminPage({ params }: PageProps) {
   const deleteCarousel = deleteCarouselItemAction.bind(null, locale);
   const logout = logoutAction.bind(null, locale);
   const createGallery = createGalleryAction.bind(null, locale);
+  const deleteGallery = deleteGalleryAction.bind(null, locale);
+  const updateGalleryPassword = updateGalleryPasswordAction.bind(null, locale);
   const uploadGalleryImages = uploadGalleryImagesAction.bind(null, locale);
   const uploadPublicImages = uploadPublicImagesAction.bind(null, locale);
 
@@ -705,6 +883,8 @@ export default async function AdminPage({ params }: PageProps) {
         upsertCarouselItem={upsertCarousel}
         deleteCarouselItem={deleteCarousel}
         createGallery={createGallery}
+        deleteGallery={deleteGallery}
+        updateGalleryPassword={updateGalleryPassword}
         uploadGalleryImages={uploadGalleryImages}
         uploadPublicImages={uploadPublicImages}
         logout={logout}

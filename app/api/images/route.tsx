@@ -48,15 +48,6 @@ const resolveFolderPath = (storedPath: string) => {
     : path.normalize(path.join(GALLERIES_FOLDER, normalized));
 };
 
-const buildDecoratedImageUrl = (
-  galleryId: number,
-  fileName: string,
-  signature: string
-) =>
-  `/api/decorate?galleryId=${galleryId}&file=${encodeURIComponent(
-    fileName
-  )}&sig=${signature}`;
-
 const buildImageUrl = (
   galleryId: number,
   fileName: string,
@@ -145,9 +136,8 @@ async function listImages(folderPath: string, galleryId: number) {
 
     const signature = signImageAccess(galleryId, file);
     const url = buildImageUrl(galleryId, file, signature);
-    const decoratedUrl = buildDecoratedImageUrl(galleryId, file, signature);
     images.push({
-      largeURL: decoratedUrl,
+      largeURL: url,
       thumbnailURL: url,
       width,
       height,
