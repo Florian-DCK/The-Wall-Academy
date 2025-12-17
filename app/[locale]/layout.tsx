@@ -1,19 +1,37 @@
 import type { Metadata } from 'next';
 import './home.css';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
+import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import CursorFollower from '@/components/CursorFollower';
 import EventBanner from '@/components/EventBanner';
 
 const SITE_NAME = 'The Wall Academy';
-const metadataBase =
+const envMetadataBase =
 	process.env.NEXT_PUBLIC_SITE_URL &&
 	process.env.NEXT_PUBLIC_SITE_URL.startsWith('http')
 		? new URL(process.env.NEXT_PUBLIC_SITE_URL)
 		: undefined;
 
 const defaultDescription = 'Website for The Wall Academy of Vincent Vanasch';
+
+const resolveMetadataBase = async () => {
+	if (envMetadataBase) {
+		return envMetadataBase;
+	}
+
+	const requestHeaders = await headers();
+	const host =
+		requestHeaders.get('x-forwarded-host') ?? requestHeaders.get('host');
+	const proto = requestHeaders.get('x-forwarded-proto') ?? 'http';
+
+	if (host) {
+		return new URL(`${proto}://${host}`);
+	}
+
+	return new URL('http://localhost:3000');
+};
 
 const localeMeta: Record<
 	string,
@@ -73,6 +91,7 @@ export async function generateMetadata({
 
 	const { description, keywords, localeName } =
 		localeMeta[locale] ?? localeMeta[routing.defaultLocale];
+	const metadataBase = await resolveMetadataBase();
 	const canonicalPath = locale === routing.defaultLocale ? '/' : `/${locale}`;
 	const absoluteCanonicalUrl = new URL(canonicalPath, metadataBase).toString();
 
@@ -83,7 +102,7 @@ export async function generateMetadata({
 	}, {} as Record<string, string>);
 
 	return {
-		...(metadataBase ? { metadataBase } : {}),
+		metadataBase,
 		applicationName: SITE_NAME,
 		title: {
 			default: SITE_NAME,
@@ -179,6 +198,8 @@ export default async function RootLayout({
 		notFound();
 	}
 
+	const metadataBase = await resolveMetadataBase();
+
 	// Charge les messages de traduction pour la locale demandée.
 	let messages: Record<string, unknown> | undefined;
 	try {
@@ -199,7 +220,7 @@ export default async function RootLayout({
 							'@context': 'https://schema.org',
 							'@type': 'Organization',
 							name: 'The Wall Academy',
-							url: metadataBase ? metadataBase.toString() : undefined,
+							url: metadataBase.toString(),
 							logo: new URL('/brandLogo.png', metadataBase).toString(),
 							founder: 'Vincent Vanasch',
 						}),

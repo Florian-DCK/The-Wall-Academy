@@ -11,10 +11,7 @@ export async function GET(request: NextRequest) {
 	const orgId = process.env.EVENT_BRITE_ORGANIZATION_ID;
 
 	if (!token || !orgId) {
-		return NextResponse.json(
-			{ error: 'Configuration Error: Missing API Token or Organization ID' },
-			{ status: 500 }
-		);
+		return NextResponse.json({ events: [], disabled: true }, { status: 200 });
 	}
 
 	// 2. Construction de l'URL de l'API Eventbrite avec les filtres

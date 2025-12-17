@@ -24,7 +24,7 @@ export default function EventBanner() {
 			try {
 				const response = await fetch('/api/events');
 				if (!response.ok) {
-					throw new Error('Failed to fetch events');
+					return;
 				}
 
 				const data = await response.json();
@@ -34,8 +34,7 @@ export default function EventBanner() {
 					setEvent(data.events[0]);
 				}
 			} catch (err) {
-				setError(err instanceof Error ? err.message : 'Unknown error');
-				console.error('Error fetching events:', err);
+				setError(null);
 			} finally {
 				setIsLoading(false);
 			}
