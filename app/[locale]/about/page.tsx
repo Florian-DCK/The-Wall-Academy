@@ -8,6 +8,7 @@ import { SUPPORTED_LOCALES } from '@/i18n/routing';
 import { Button } from '@/components/ui/button';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
+import { useScrollAnimation } from '../../lib/useScrollAnimation';
 import {
 	Award,
 	BookOpen,
@@ -30,6 +31,15 @@ const About = () => {
 	const t = useTranslations('AboutPage');
 	const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 	const mottoRefs = React.useRef<HTMLSpanElement[]>([]);
+	const slideInLeftRef = useScrollAnimation({
+		type: 'slideInLeft',
+		duration: 1,
+	});
+	const fadeInUpRef = useScrollAnimation({
+		type: 'fadeInUp',
+		duration: 0.9,
+		stagger: 0.1,
+	});
 	const richText = {
 		strong: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
 	};
@@ -108,6 +118,10 @@ const About = () => {
 	];
 
 	const mottos = [t('hero.mottos.0'), t('hero.mottos.1')];
+	const bookLink =
+		lang === 'en'
+			? 'https://www.amazon.com.be/wall-offici%C3%ABle-biografie-werelds-hockeykeeper/dp/9464782226/'
+			: 'https://www.fr.fnac.be/a18158813/V-Vanasch-The-wall-la-biographie-autorisee-du-meilleur-gardien-de-hock?';
 
 	useGSAP(() => {
 		const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.6 });
@@ -122,6 +136,7 @@ const About = () => {
 				'+=2.4'
 			);
 		});
+
 	}, []);
 
 	return (
@@ -140,14 +155,16 @@ const About = () => {
 				</Link>
 				<div className="relative flex flex-col justify-center gap-6 px-6 py-24 lg:px-16">
 					<div className="flex flex-col gap-6">
-						<h1 className="text-4xl lg:text-7xl font-extrabold uppercase leading-[0.9]">
+						<h1
+							ref={slideInLeftRef}
+							className="text-4xl lg:text-7xl font-extrabold uppercase leading-[0.9]">
 								{t('hero.titleFirst')}
 								<br />
 								<span className="bg-linear-to-r from-secondary to-primary bg-clip-text text-transparent">
 									{t('hero.titleLast')}
 								</span>
 							</h1>
-						<div className="flex flex-col gap-2">
+						<div className="relative min-h-[3rem] lg:h-10 overflow-hidden">
 							{mottos.map((motto, index) => (
 								<span
 									key={motto}
@@ -156,13 +173,15 @@ const About = () => {
 											mottoRefs.current[index] = el;
 										}
 									}}
-									className="text-left text-xs lg:text-sm font-semibold uppercase tracking-[0.25em] text-white/70 opacity-0">
-									{motto}
+									className="absolute inset-0 text-left text-xs lg:text-sm font-semibold uppercase tracking-[0.18em] lg:tracking-[0.25em] text-white/70 opacity-0 whitespace-normal lg:whitespace-nowrap">
+									<span className="block max-w-full px-3 lg:px-5">{motto}</span>
 								</span>
 							))}
 						</div>
 					</div>
-					<p className="text-lg lg:text-2xl text-white/80 max-w-xl">
+					<p
+						ref={fadeInUpRef}
+						className="text-lg lg:text-2xl text-white/80 max-w-xl">
 						{t.rich('hero.subtitle', richText)}
 					</p>
 					<div className="flex flex-wrap items-center gap-4">
@@ -287,36 +306,40 @@ const About = () => {
 			</section>
 
 			<section id="highlights" className="py-20">
-				<div className="mx-auto max-w-6xl px-6 lg:px-10">
-					<div className="flex flex-col gap-10">
-						<h2 className="text-3xl lg:text-5xl font-extrabold uppercase">
-						{t('highlights.titleLine1')}
-						<br />
-						<span className="bg-linear-to-r from-secondary to-primary bg-clip-text text-transparent">
-							{t('highlights.titleLine2')}
-						</span>
-					</h2>
-						<ul className="flex flex-col gap-14">
-							{highlights.map((item, index) => {
-								const Icon = item.icon;
-								return (
-									<li
-										key={t(item.title)}
-										className={`whatIsItem ${index % 2 === 1 ? 'ml-20' : ''}`}>
-										<div className="whatIsItemHeader flex gap-4">
-											<Icon className="size-7 icon-gradient" />
-											<h3 className="whatIsItemTitle text-xl font-bold mb-2">
-												{t(item.title)}
-											</h3>
-										</div>
-										<p className="whatIsItemDescription text-black">
-											{t(item.body)}
-										</p>
-										<hr className="w-1/3 mt-4 border-2 rounded-full" />
-									</li>
-								);
-							})}
-						</ul>
+				<div className="mx-auto max-w-7xl px-6 lg:px-10">
+					<div className="grid items-start gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+						<div>
+							<h2 className="text-3xl lg:text-5xl font-extrabold uppercase">
+								{t('highlights.titleLine1')}
+								<br />
+								<span className="bg-linear-to-r from-secondary to-primary bg-clip-text text-transparent">
+									{t('highlights.titleLine2')}
+								</span>
+							</h2>
+						</div>
+						<div>
+							<ul className="flex flex-col gap-14">
+								{highlights.map((item, index) => {
+									const Icon = item.icon;
+									return (
+										<li
+											key={t(item.title)}
+											className={`whatIsItem ${index % 2 === 1 ? 'ml-20' : ''}`}>
+											<div className="whatIsItemHeader flex gap-4">
+												<Icon className="size-7 icon-gradient" />
+												<h3 className="whatIsItemTitle text-xl font-bold mb-2">
+													{t(item.title)}
+												</h3>
+											</div>
+											<p className="whatIsItemDescription text-black">
+												{t(item.body)}
+											</p>
+											<hr className="w-1/3 mt-4 border-2 rounded-full" />
+										</li>
+									);
+								})}
+							</ul>
+						</div>
 					</div>
 				</div>
 			</section>
@@ -335,8 +358,11 @@ const About = () => {
 					<div className="relative">
 						<div className="absolute left-3 top-0 h-full w-px bg-linear-to-b from-secondary/70 via-white/30 to-transparent" />
 						<ul className="flex flex-col gap-10 pl-12">
-							{clubs.map((club) => (
-								<li key={t(club.club)} className="relative">
+							{clubs.map((club, index) => (
+								<li
+									key={`${club.club}-${index}`}
+									ref={fadeInUpRef}
+									className="relative">
 									<span className="absolute -left-[2.7rem] top-2 size-3 rounded-full bg-secondary shadow-[0_0_0_6px_rgba(241,90,36,0.2)]" />
 									<div className="flex flex-col gap-2 border-b border-white/10 pb-8">
 										<h3 className="text-2xl font-extrabold uppercase tracking-wide">
@@ -381,7 +407,7 @@ const About = () => {
 								{t('book.paragraph2')}
 							</p>
 									<a
-										href="https://www.fr.fnac.be/a18158813/V-Vanasch-The-wall-la-biographie-autorisee-du-meilleur-gardien-de-hock?"
+										href={bookLink}
 										target="_blank"
 										rel="noreferrer"
 										className="mt-6 inline-flex items-center gap-3 rounded-full border border-black/10 px-5 py-3 text-xs font-semibold uppercase tracking-[0.3em] text-black hover:border-black/30">

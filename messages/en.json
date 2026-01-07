@@ -113,8 +113,8 @@
       "discover": "Discover",
       "galleryCta": "Gallery",
       "mottos": [
-        "Work hard in silence, let success make the noise.",
-        "Talent wins games, the team wins titles."
+        "“Work hard in silence, let success make the noise.”",
+        "“Talent wins games, the team wins titles.”"
       ]
     },
     "story": {
@@ -178,11 +178,11 @@
           "detail": "EHL 2019, first title for a Belgian club."
         },
         {
-          "name": "Rot-Weiss K?ln",
+          "name": "Rot-Weiss Köln",
           "detail": "German champions 2021, 2022, 2023."
         },
         {
-          "name": "Royal Or?e",
+          "name": "Royal Orée",
           "detail": "Return in 2023 for a three-year contract."
         },
         {
@@ -196,7 +196,7 @@
       "titleLine2": "the official biography",
       "paragraph1": "Three-time Belgian champion, three-time German champion, two-time Dutch champion, two-time European club champion, then European champion, world champion and Olympic champion with the Red Lions: everything in Vincent Vanasch's career seems simple, beautiful and grand. Yet for the man they would call The Wall, the wall was not built in a day. \"Too big\", \"too small\", \"too mentally fragile\": nothing was guaranteed. In his career there were more defeats than victories. But driven by passion, supported by his teammates and galvanized by skeptics, he laid every brick patiently, collectively, on one cement: family and friends. In this sensitive autobiography, \"Vinchou\" shares the secrets and doubts that marked his journey from the White Star family club to the Olympic gold in Tokyo. On the double-decker bus that takes the national team from the airport to the center of Brussels to meet thousands of fans, Vincent Vanasch takes the time to remember every step and every person who mattered. How did the Red Lions learn to win? How can a kid from Evere become three-time world goalkeeper of the year? Vincent Vanasch takes you on this magnificent bus ride. Enjoy.",
       "paragraph2": "Vincent revisits every step, from White Star to Olympic gold, and explains how the Red Lions learned to win.",
-      "cta": "View on Fnac",
+      "cta": "View on Amazon",
       "coverAlt": "The Wall book cover"
     }
   }
