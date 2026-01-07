@@ -27,7 +27,19 @@ const Header: React.FC<HeaderProps> = ({ isConnected = false }) => {
 	const locale = useLocale(); // from next-intl or your own context
 	const pathname = usePathname();
 	const isHome = pathname === `/${locale}`;
-	console.log('isHome:', isHome);
+	const buildLocalizedPath = (nextLocale: string) => {
+		if (!pathname) {
+			return `/${nextLocale}`;
+		}
+
+		const segments = pathname.split('/').filter(Boolean);
+		if (segments.length === 0) {
+			return `/${nextLocale}`;
+		}
+
+		segments[0] = nextLocale;
+		return `/${segments.join('/')}`;
+	};
 
 	return (
 		<header className="sticky top-0 z-40 border-b border-white/10 bg-[#05070d]/85 backdrop-blur-2xl">
@@ -62,14 +74,13 @@ const Header: React.FC<HeaderProps> = ({ isConnected = false }) => {
 				<div
 					id="header-navigation"
 					className={cn(
-						'ml-auto flex flex-col items-center gap-5 rounded-3xl border border-white/10 bg-[#070a12]/90 px-6 py-5 text-white shadow-[0_25px_60px_rgba(0,0,0,0.55)] md:flex-row md:border-0 md:bg-transparent md:px-0 md:py-0 md:shadow-none',
-						isMenuOpen ? 'flex' : 'hidden md:flex'
+						'ml-auto hidden flex-col items-center gap-5 rounded-3xl border border-white/10 bg-[#070a12]/90 px-6 py-5 text-white shadow-[0_25px_60px_rgba(0,0,0,0.55)] md:flex md:flex-row md:border-0 md:bg-transparent md:px-0 md:py-0 md:shadow-none'
 					)}>
 					<nav className="flex items-center gap-4 text-xs font-heading tracking-[0.3em] uppercase md:gap-6">
 						{locales.map((locale) => (
 							<Link
 								key={locale.code}
-								href={`/${locale.code}`}
+								href={buildLocalizedPath(locale.code)}
 								className="rounded-full border border-white/15 px-4 py-2 text-white/80 transition hover:border-white/40 hover:text-white">
 								{locale.label}
 							</Link>
@@ -80,12 +91,36 @@ const Header: React.FC<HeaderProps> = ({ isConnected = false }) => {
 							''
 						) : (
 							<Button className="w-full md:w-auto" asChild>
-								<Link href="/">{t('connect')}</Link>
+								<Link href="/gallery">{t('connect')}</Link>
 							</Button>
 						)}
 					</div>
 				</div>
 			</div>
+			{isMenuOpen ? (
+				<div className="md:hidden">
+					<div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 pb-6 sm:px-6">
+						<nav className="flex flex-col gap-3 text-xs font-heading tracking-[0.3em] uppercase">
+							{locales.map((locale) => (
+								<Link
+									key={locale.code}
+									href={buildLocalizedPath(locale.code)}
+									className="rounded-full border border-white/15 px-4 py-3 text-center text-white/80 transition hover:border-white/40 hover:text-white"
+									onClick={() => setIsMenuOpen(false)}>
+									{locale.label}
+								</Link>
+							))}
+						</nav>
+						{isHome ? null : (
+							<Button className="w-full" asChild>
+								<Link href="/gallery" onClick={() => setIsMenuOpen(false)}>
+									{t('connect')}
+								</Link>
+							</Button>
+						)}
+					</div>
+				</div>
+			) : null}
 		</header>
 	);
 };

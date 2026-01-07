@@ -1,38 +1,203 @@
 {
   "Home": {
     "title": "mijn<br></br>doel:<br></br>de<br></br><highlight>beste</highlight><br></br><highlight>keepers</highlight><br></br>trainen.",
+    "headline1": "wil je een<br></br><highlight>geweldige</highlight><br></br><highlight>keeper</highlight><br></br>worden en<br></br>schitteren<br></br>op het veld?",
+    "description1": "Doe mee aan onze Academy en boost<br></br>je vaardigheden met onze ervaren coaches!<br></br>Leer met <strong>Vincent Vanasch</strong>!<br></br>Klaar voor perfectie?",
+    "headline2": "kom bij ons<br></br>en word<br></br>je skills<br></br>om tot<br></br><highlight>super</highlight><br></br><highlight>krachten</highlight>",
+    "description2": "Camps de hele zomer!<br></br><faded>Blue Lions & Royal Orée<br></br><small>61 Hertswegenstraat, 3080 Tervuren &<br></br>Avenue Edmond Galoppin 1150 Woluwe-Saint-Pierre</small></faded>",
     "CTA": "Ik schrijf me in!",
-    "Footer": {
-      "social": {
-        "facebook": "Facebook",
-        "instagram": "Instagram",
-        "tiktok": "TikTok",
-        "youtube": "YouTube"
-      }
+    "testimonyCatchphrase": "ze kwamen<br></br>ze zagen<br></br><highlight>ze</highlight><br></br><highlight>overwonnen</highlight>",
+    "Carousel": {
+      "captionSarah": "Vincent Vanasch is de beste keeper ter wereld!<br></br>Ik had de kans om deel te nemen aan zijn stage<br></br>en ik heb ongelooflijke trucjes geleerd<br></br>om schoten te blokkeren!<br></br>Nu ben ik klaar<br></br>om zelf ook een kampioen te worden!",
+      "captionChris": "Het is ongelooflijk wat ik geleerd heb.<br></br>Het was echt geweldig.<br></br>Veruit de beste week<br></br>van het jaar!",
+      "captionThomas": "De Wall Academy was<br></br>een fantastische ervaring voor mij.<br></br>Ik verbeterde mijn reflexen,<br></br>mijn stoptechnieken<br></br>en leerde beter te communiceren<br></br>met mijn team.",
+      "captionCamille": "De coaches waren echt geweldig<br></br>en gaven me individueel advies<br></br>om mijn prestaties te verbeteren.<br></br>Ik kan deze stage aan alle<br></br>keepers van harte aanbevelen!",
+      "captionCeline": "Ik had het geluk om coaches te hebben<br></br>die me leerden hoe ik mijn lichaam goed kon positioneren,<br></br>hoeken beter kon begrijpen<br></br>en beter kon anticiperen op schoten van de tegenstander.",
+      "captionHugo": "Ik heb deelgenomen aan de hockey stage<br></br>speciaal voor keepers met Vincent Vanasch<br></br>en ik heb zoveel geleerd!<br></br>Nu ben ik de muur van mijn kleine team,<br></br>en mijn vrienden noemen me \"de bakstenen muur\"!"
     },
     "WhatIs": {
+      "title": "<highlight>the wall</highlight><br></br><highlight>academy</highlight><br></br>wat is het<br></br>precies?",
       "WhatIsItems": {
-        "atelierDescription": "Ontdek de geheimen van de kampioen door middel van speciale workshops."
+        "atelierTitle": "Speciale workshops",
+        "atelierDescription": "Ontdek de geheimen van de kampioen door middel van speciale workshops.",
+        "wallTitle": "The Wall",
+        "wallDescription": "Ontmoet Vincent Vanasch en krijg advies van de Olympisch kampioen.",
+        "videoTitle": "Videoanalyse",
+        "videoDescription": "Profiteer van de expertise van de besten met onze diepgaande videoanalysesessies!",
+        "experienceTitle": "Onvergetelijke ervaring",
+        "experienceDescription": "Beleef een unieke ervaring door deel te nemen aan een elite stage georganiseerd door de beste keeper ter wereld.",
+        "smallGroupTitle": "Kleine groep, geweldige ervaring",
+        "smallGroupDescription": "Het beperkte aantal keepers garandeert elk van hen een uitstekende ondersteuning en begeleiding, voor persoonlijke aandacht van hoge kwaliteit.",
+        "staffTitle": "Gespecialiseerde staff",
+        "staffDescription": "Profiteer van ervaren keeperstrainers die je deskundig technisch advies geeft.",
+        "coachingTitle": "Individuele coaching",
+        "coachingDescription": "Praat met de staf in individuele coachingsessies gewijd aan jouw ontwikkeling.",
+        "concentrationTitle": "Concentratie",
+        "concentrationDescription": "Krijg tips over hoe je je concentratie en vertrouwen kunt verbeteren om je vermogen om op hoog niveau te spelen te vergroten."
+      }
+    },
+    "Footer": {
+      "title": "zet jullie<br></br>helmen op<br></br>jullie<br></br>handschoenen<br></br>jullie leggers<br></br><highlight>ik wacht op jullie</highlight>",
+      "follow": "Volg ons:",
+      "social": {
+        "instagram": "Instagram",
+        "facebook": "Facebook",
+        "youtube": "YouTube",
+        "tiktok": "TikTok"
       }
     }
   },
+  "About": {
+    "kicker": "Over",
+    "title": "gemaakt voor<br></br><highlight>keepers</highlight><br></br>die meer willen",
+    "lead": "Elite training, focus op wedstrijd,<br></br>en een mindset voor druk.",
+    "cta": "Bekijk de galerij",
+    "secondaryCta": "Ontdek de kampen",
+    "missionKicker": "Missie",
+    "missionTitle": "train de <highlight>volgende muur</highlight>",
+    "missionBody": "We brengen pro gewoontes naar jonge keepers via intense, leuke en gestructureerde sessies.",
+    "missionList": {
+      "item1": "elite coaching",
+      "item2": "kleine groepen",
+      "item3": "video analyse"
+    },
+    "valuesTitle": "onze <highlight>pilaren</highlight>",
+    "values": {
+      "trainingTitle": "precisie",
+      "trainingBody": "Eerst techniek, daarna snelheid en kracht.",
+      "communityTitle": "community",
+      "communityBody": "Een teamcultuur die iedereen vooruit duwt.",
+      "excellenceTitle": "excellentie",
+      "excellenceBody": "Details tellen: focus, discipline, herstel."
+    },
+    "storyKicker": "Verhaal",
+    "storyTitle": "van topsport<br></br>naar academy",
+    "storyBody": "Vincent Vanasch zet jaren internationale ervaring om in moderne keepertraining.",
+    "ctaTitle": "klaar om het doel in te gaan?",
+    "ctaBody": "Doe mee met het volgende kamp en bouw reflexen, vertrouwen en leiderschap.",
+    "ctaButton": "Ik schrijf me in"
+  },
   "Gallery": {
-    "title": "Krijg toegang tot elk iconisch moment<br></br>van hun avontuur.",
+    "title": "Bekijk elk iconisch moment<br></br>van hun avontuur.",
     "cardTitle": "Meld je aan!",
-    "cardDescription": "Log in om de galerij van het geselecteerde kamp te bekijken.",
-    "selectPlaceholder": "Selecteer een kamp",
-    "selectAnotherPlaceholder": "Selecteer een ander kamp",
+    "cardDescription": "Meld je aan om toegang te krijgen tot de galerij van de geselecteerde stage.",
+    "selectPlaceholder": "Selecteer een stage",
+    "selectAnotherPlaceholder": "Selecteer een andere stage",
     "passwordPlaceholder": "Voer het wachtwoord in",
     "passwordLabel": "Wachtwoord",
-    "selectLabel": "Kamp",
-    "buttonSubmit": "Bekijk de foto's!",
-    "successMessage": "Succesvol verbonden.",
+    "selectLabel": "Stage",
+    "buttonSubmit": "Toegang tot de foto's!",
+    "successMessage": "Succesvol aangemeld.",
     "errorMessage": "Er is een fout opgetreden, controleer je gegevens.",
-    "privacyNote": "Beveiligde toegang voor ingeschreven begeleiders",
+    "privacyNote": "Beveiligde toegang voor ingeschreven keepers",
     "heroClaim": "Hun hoogtepunten"
   },
   "Header": {
     "connect": "Kies een ander album",
-    "toggleNavigation": "Navigatiemenu wisselen"
+    "toggleNavigation": "Navigatiemenu openen/sluiten"
+  },
+  "EventBanner": {
+    "BOOK_NOW": "IK SCHRIJF ME IN!",
+    "REMAINING": "NOG",
+    "PLACES": "PLAATSEN",
+    "FROM": "VAN",
+    "TO": "TOT"
+  },
+  "AboutPage": {
+    "hero": {
+      "titleFirst": "Vincent",
+      "titleLast": "Vanasch",
+      "logoAlt": "The Wall Academy-logo",
+      "portraitAlt": "Vincent Vanasch",
+      "subtitle": "Belgische internationale keeper, bijgenaamd <strong>The Wall</strong>. Olympisch kampioen en drievoudig FIH Goalkeeper of the Year.",
+      "discover": "Ontdek",
+      "galleryCta": "Galerij",
+      "mottos": [
+        "Werk hard in stilte, laat succes het lawaai maken.",
+        "Talent wint wedstrijden, het team wint titels."
+      ]
+    },
+    "story": {
+      "titleLine1": "Een parcours",
+      "titleLine2": "van topniveau",
+      "intro": "Opgeleid bij Royal Evere White Star bouwde Vincent Vanasch stap voor stap zijn weg uit tot een van de beste keepers van zijn generatie in het veldhockey.",
+      "body": "Olympisch kampioen en drievoudig FIH Goalkeeper of the Year, met meer dan <strong>280 caps</strong> voor de Red Lions. In Tokio 2020 pakte Belgi? zijn eerste olympische mannengoud dankzij zijn beslissende shoot-out reddingen.",
+      "olympicsTitle": "Olympische Spelen",
+      "olympics": [
+        "Londen 2012",
+        "Rio 2016 - zilveren medaille",
+        "Tokio 2020 - gouden medaille",
+        "Parijs 2024"
+      ]
+    },
+    "highlights": {
+      "titleLine1": "Kern",
+      "titleLine2": "momenten",
+      "items": [
+        {
+          "title": "Internationale keeper",
+          "body": "Meer dan 280 caps met de Red Lions."
+        },
+        {
+          "title": "The Wall",
+          "body": "Drievoudig FIH Goalkeeper of the Year."
+        },
+        {
+          "title": "Olympisch goud",
+          "body": "Tokio 2020, beslissende reddingen in de shoot-outs."
+        },
+        {
+          "title": "Leiderschap",
+          "body": "Referentiekeeper, mentor en rolmodel."
+        }
+      ]
+    },
+    "clubs": {
+      "titleLine1": "Titels",
+      "titleLine2": "door heel Europa",
+      "linkLabel": "Offici?le site",
+      "items": [
+        {
+          "name": "Royal Evere White Star",
+          "detail": "Jeugdclub waar het allemaal begon."
+        },
+        {
+          "name": "Le Pingouin",
+          "detail": "Ontwikkelingsstap voor de top."
+        },
+        {
+          "name": "Waterloo Ducks",
+          "detail": "Drie opeenvolgende Belgische titels (2012, 2013, 2014)."
+        },
+        {
+          "name": "Oranje-Zwart / Oranje-Rood",
+          "detail": "Twee Nederlandse titels (2015, 2016) en de EHL (2015)."
+        },
+        {
+          "name": "Waterloo Ducks",
+          "detail": "EHL 2019, eerste titel voor een Belgische club."
+        },
+        {
+          "name": "Rot-Weiss K?ln",
+          "detail": "Duits kampioen in 2021, 2022 en 2023."
+        },
+        {
+          "name": "Royal Or?e",
+          "detail": "Terugkeer in 2023 voor een contract van drie jaar."
+        },
+        {
+          "name": "Soorma Hockey Club",
+          "detail": "Actief in de Hero Hockey India League."
+        }
+      ]
+    },
+    "book": {
+      "titleLine1": "The Wall",
+      "titleLine2": "de offici?le biografie",
+      "paragraph1": "Drievoudig Belgisch kampioen, drievoudig Duits kampioen, tweevoudig Nederlands kampioen, tweevoudig Europees clubkampioen, daarna Europees kampioen, wereldkampioen en olympisch kampioen met de Red Lions: alles in de carri?re van Vincent Vanasch lijkt eenvoudig, mooi en groots. Toch werd de muur van The Wall niet in ??n dag gebouwd. \"Te groot\", \"te klein\", \"mentaal te fragiel\": niets was vanzelfsprekend. In zijn carri?re waren er meer nederlagen dan overwinningen. Maar gedreven door passie, gesteund door zijn teamgenoten en geprikkeld door sceptici, legde hij elke baksteen geduldig, collectief, op ??n cement: familie en vrienden. In deze gevoelige autobiografie deelt \"Vinchou\" de geheimen en twijfels die zijn weg tekenden van de White Star-familieclub tot het olympisch goud in Tokio. Op de dubbeldekker die de nationale ploeg van de luchthaven naar het centrum van Brussel brengt, waar duizenden fans wachten, neemt Vincent Vanasch de tijd om elke stap en elke persoon te herinneren. Hoe leerden de Red Lions winnen? Hoe kan een jongen uit Evere drie keer tot beste keeper ter wereld uitgroeien? Vincent Vanasch neemt je mee op deze prachtige busrit. Veel leesplezier.",
+      "paragraph2": "Vincent blikt terug op elke stap, van White Star tot olympisch goud, en vertelt hoe de Red Lions leerden winnen.",
+      "cta": "Bekijk op Fnac",
+      "coverAlt": "Boekomslag van The Wall"
+    }
   }
 }

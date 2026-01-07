@@ -1,38 +1,203 @@
 {
   "Home": {
-    "title": "my<br></br>goal:<br></br>get the<br></br><highlight>best</highlight><br></br><highlight>keepers</highlight><br></br>out.",
+    "title": "my<br></br>goal:<br></br>train<br></br>the<br></br><highlight>best</highlight><br></br><highlight>keepers</highlight><br></br>out.",
+    "headline1": "You want to become<br></br>a <highlight>great</highlight><br></br><highlight>keeper</highlight><br></br>and shine<br></br>on the pitch ?",
+    "description1": "Join our Academy and boost<br></br>your skills with our experienced coaches!<br></br>Learn with <strong>Vincent Vanasch</strong>!<br></br>Ready for excellence?",
+    "headline2": "join<br></br>us and<br></br>turn<br></br>your skills<br></br>into <highlight>super</highlight><br></br><highlight>powers</highlight>",
+    "description2": "Camps all summer!<br></br><faded>Blue Lions & Royal Orée<br></br><small>61 Hertswegenstraat, 3080 Tervuren &<br></br>Avenue Edmond Galoppin 1150 Woluwe-Saint-Pierre</small></faded>",
     "CTA": "I'm signing up",
-    "Footer": {
-      "social": {
-        "facebook": "Facebook",
-        "instagram": "Instagram",
-        "tiktok": "TikTok",
-        "youtube": "YouTube"
-      }
+    "testimonyCatchphrase": "they<br></br>came<br></br>they saw<br></br><highlight>they</highlight><br></br><highlight>conquered</highlight>",
+    "Carousel": {
+      "captionSarah": "Vincent Vanasch is the best goalkeeper in the world!<br></br>I was lucky enough to participate in his training course<br></br>and I learned some incredible tricks<br></br>to block shots!<br></br>Now I'm ready<br></br>to become a champion myself!",
+      "captionChris": "It's amazing what I learned.<br></br>It was really great.<br></br>By far the best week<br></br>of the year!",
+      "captionThomas": "The Wall Academy<br></br>was an incredible experience for me.<br></br>I improved my reflexes,<br></br>my stopping techniques<br></br>and learned to communicate<br></br>better with my team.",
+      "captionCamille": "The coaches were really great<br></br>and gave me individual advice<br></br>on how to improve my performance.<br></br>I highly recommend this course<br></br>to all keepers!",
+      "captionCeline": "I was lucky to have coaches<br></br>who taught me how to position my body well,<br></br>to better understand angles<br></br>and to better anticipate opposing shots.",
+      "captionHugo": "I took part in the hockey course<br></br>especially for goalkeepers<br></br>with Vincent Vanasch and I learned a lot!<br></br>Now I am the wall of my little team,<br></br>and my friends call me \"the brick wall\"!"
     },
     "WhatIs": {
+      "title": "<highlight>the wall</highlight><br></br><highlight>academy</highlight><br></br>what is it<br></br>exactly?",
       "WhatIsItems": {
-        "atelierDescription": "Discover the secrets of champions through special workshops."
+        "atelierTitle": "Special Workshops",
+        "atelierDescription": "Discover the secrets of champions through special workshops.",
+        "wallTitle": "The Wall",
+        "wallDescription": "Meet Vincent Vanasch and get advice from the Olympic champion.",
+        "videoTitle": "Video analysis",
+        "videoDescription": "Benefit from the expertise of the best in the business with our in-depth video analysis sessions!",
+        "experienceTitle": "Unforgettable experience",
+        "experienceDescription": "Enjoy a unique experience by participating in an elite course organised by the best goalkeeper in the world.",
+        "smallGroupTitle": "Small group big experience",
+        "smallGroupDescription": "A limited number of keepers ensures that everyone receives high quality attention and coaching.",
+        "staffTitle": "Specialised staff",
+        "staffDescription": "Take advantage of an experienced goalkeeper training team that will provide you with relevant and expert technical advice.",
+        "coachingTitle": "Individual coaching",
+        "coachingDescription": "Talk to the team in personalised coaching sessions dedicated to your progress.",
+        "concentrationTitle": "Concentration",
+        "concentrationDescription": "Benefit from recommendations to strengthen your concentration and confidence."
+      }
+    },
+    "Footer": {
+      "title": "put your<br></br>helmet<br></br>your<br></br>legguards<br></br>and gloves<br></br><highlight>I'm waiting for you</highlight>",
+      "follow": "Follow us:",
+      "social": {
+        "instagram": "Instagram",
+        "facebook": "Facebook",
+        "youtube": "YouTube",
+        "tiktok": "TikTok"
       }
     }
   },
+  "About": {
+    "kicker": "About",
+    "title": "built for<br></br><highlight>keepers</highlight><br></br>who want more",
+    "lead": "Elite training, real game focus,<br></br>and a mindset built for pressure.",
+    "cta": "See the gallery",
+    "secondaryCta": "Discover the camps",
+    "missionKicker": "Mission",
+    "missionTitle": "train the <highlight>next wall</highlight>",
+    "missionBody": "We bring pro-level habits to young keepers through intense, fun, and structured sessions led by top staff.",
+    "missionList": {
+      "item1": "elite coaching",
+      "item2": "small groups",
+      "item3": "video analysis"
+    },
+    "valuesTitle": "our <highlight>pillars</highlight>",
+    "values": {
+      "trainingTitle": "precision",
+      "trainingBody": "Technique first, then speed and power.",
+      "communityTitle": "community",
+      "communityBody": "A team culture that pushes everyone forward.",
+      "excellenceTitle": "excellence",
+      "excellenceBody": "Details matter: focus, discipline, recovery."
+    },
+    "storyKicker": "Story",
+    "storyTitle": "from elite career<br></br>to academy",
+    "storyBody": "Vincent Vanasch turns years of international experience into clear, modern goalkeeper training.",
+    "ctaTitle": "ready to step in goal?",
+    "ctaBody": "Join the next camp and build your reflexes, confidence, and leadership.",
+    "ctaButton": "I'm signing up"
+  },
   "Gallery": {
-    "title": "Access every iconic moment<br></br>from their adventure.",
-    "cardTitle": "Identify yourself!",
-    "cardDescription": "Log in to access the gallery for the selected camp.",
+    "title": "Access every iconic moment<br></br>of their adventure.",
+    "cardTitle": "Sign in!",
+    "cardDescription": "Sign in to access the photo gallery for the selected camp.",
     "selectPlaceholder": "Select a camp",
     "selectAnotherPlaceholder": "Select another camp",
     "passwordPlaceholder": "Enter the password",
     "passwordLabel": "Password",
     "selectLabel": "Camp",
-    "buttonSubmit": "Access the photos!",
-    "successMessage": "Successfully connected.",
-    "errorMessage": "An error occurred, please check your credentials.",
-    "privacyNote": "Secure access for enrolled guardians",
-    "heroClaim": "Their highlight moments"
+    "buttonSubmit": "Access photos!",
+    "successMessage": "Successfully signed in.",
+    "errorMessage": "Something went wrong, please check your credentials.",
+    "privacyNote": "Secure access for registered goalkeepers",
+    "heroClaim": "Their highlights"
   },
   "Header": {
     "connect": "Choose another album",
     "toggleNavigation": "Toggle navigation menu"
+  },
+  "EventBanner": {
+    "BOOK_NOW": "I'M SIGNING UP",
+    "REMAINING": "STILL",
+    "PLACES": "PLACES",
+    "FROM": "FROM",
+    "TO": "TO"
+  },
+  "AboutPage": {
+    "hero": {
+      "titleFirst": "Vincent",
+      "titleLast": "Vanasch",
+      "logoAlt": "The Wall Academy logo",
+      "portraitAlt": "Vincent Vanasch",
+      "subtitle": "Belgian international goalkeeper, nicknamed <strong>The Wall</strong>. Olympic champion and three-time FIH Goalkeeper of the Year.",
+      "discover": "Discover",
+      "galleryCta": "Gallery",
+      "mottos": [
+        "Work hard in silence, let success make the noise.",
+        "Talent wins games, the team wins titles."
+      ]
+    },
+    "story": {
+      "titleLine1": "A journey",
+      "titleLine2": "of excellence",
+      "intro": "Trained at Royal Evere White Star, Vincent Vanasch built his path step by step before becoming one of the top field hockey goalkeepers of his generation.",
+      "body": "Olympic champion and three-time FIH Goalkeeper of the Year, he has more than <strong>280 caps</strong> with the Red Lions. In Tokyo 2020, Belgium captured its first men's Olympic title thanks to his decisive shoot-out saves.",
+      "olympicsTitle": "Olympic Games",
+      "olympics": [
+        "London 2012",
+        "Rio 2016 - silver medal",
+        "Tokyo 2020 - gold medal",
+        "Paris 2024"
+      ]
+    },
+    "highlights": {
+      "titleLine1": "Key",
+      "titleLine2": "highlights",
+      "items": [
+        {
+          "title": "International goalkeeper",
+          "body": "Over 280 caps with the Red Lions."
+        },
+        {
+          "title": "The Wall",
+          "body": "Three-time FIH Goalkeeper of the Year."
+        },
+        {
+          "title": "Olympic gold",
+          "body": "Tokyo 2020, decisive saves in the shoot-outs."
+        },
+        {
+          "title": "Leadership",
+          "body": "Reference goalkeeper, mentor and role model."
+        }
+      ]
+    },
+    "clubs": {
+      "titleLine1": "Titles",
+      "titleLine2": "across Europe",
+      "linkLabel": "Official site",
+      "items": [
+        {
+          "name": "Royal Evere White Star",
+          "detail": "Formative club where it all began."
+        },
+        {
+          "name": "Le Pingouin",
+          "detail": "Development step before the elite."
+        },
+        {
+          "name": "Waterloo Ducks",
+          "detail": "Three consecutive Belgian titles (2012, 2013, 2014)."
+        },
+        {
+          "name": "Oranje-Zwart / Oranje-Rood",
+          "detail": "Two Dutch titles (2015, 2016) and the EHL (2015)."
+        },
+        {
+          "name": "Waterloo Ducks",
+          "detail": "EHL 2019, first title for a Belgian club."
+        },
+        {
+          "name": "Rot-Weiss K?ln",
+          "detail": "German champions 2021, 2022, 2023."
+        },
+        {
+          "name": "Royal Or?e",
+          "detail": "Return in 2023 for a three-year contract."
+        },
+        {
+          "name": "Soorma Hockey Club",
+          "detail": "Played in the Hero Hockey India League."
+        }
+      ]
+    },
+    "book": {
+      "titleLine1": "The Wall",
+      "titleLine2": "the official biography",
+      "paragraph1": "Three-time Belgian champion, three-time German champion, two-time Dutch champion, two-time European club champion, then European champion, world champion and Olympic champion with the Red Lions: everything in Vincent Vanasch's career seems simple, beautiful and grand. Yet for the man they would call The Wall, the wall was not built in a day. \"Too big\", \"too small\", \"too mentally fragile\": nothing was guaranteed. In his career there were more defeats than victories. But driven by passion, supported by his teammates and galvanized by skeptics, he laid every brick patiently, collectively, on one cement: family and friends. In this sensitive autobiography, \"Vinchou\" shares the secrets and doubts that marked his journey from the White Star family club to the Olympic gold in Tokyo. On the double-decker bus that takes the national team from the airport to the center of Brussels to meet thousands of fans, Vincent Vanasch takes the time to remember every step and every person who mattered. How did the Red Lions learn to win? How can a kid from Evere become three-time world goalkeeper of the year? Vincent Vanasch takes you on this magnificent bus ride. Enjoy.",
+      "paragraph2": "Vincent revisits every step, from White Star to Olympic gold, and explains how the Red Lions learned to win.",
+      "cta": "View on Fnac",
+      "coverAlt": "The Wall book cover"
+    }
   }
 }
