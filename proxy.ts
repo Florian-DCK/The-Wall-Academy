@@ -6,6 +6,57 @@ import { decrypt } from '@/app/lib/session';
 // next-intl middleware instance
 const nextIntlMiddleware = createMiddleware(routing);
 
+const COUNTRY_TO_LOCALE: Record<string, string> = {
+	BE: 'fr',
+};
+
+function isSupportedLocale(value: string | undefined): value is string {
+	return (
+		typeof value === 'string' &&
+		Array.isArray(routing.locales) &&
+		routing.locales.includes(value)
+	);
+}
+
+function pickLocaleFromAcceptLanguage(headerValue: string | null): string | null {
+	if (!headerValue || !Array.isArray(routing.locales)) return null;
+
+	const supported = new Set(routing.locales);
+	const ranked = headerValue
+		.split(',')
+		.map((part) => {
+			const [tagPart, ...params] = part.trim().split(';');
+			const qParam = params.find((param) => param.trim().startsWith('q='));
+			const q = qParam ? Number.parseFloat(qParam.split('=')[1]) : 1;
+			return { tag: tagPart.toLowerCase(), q: Number.isFinite(q) ? q : 0 };
+		})
+		.filter((item) => item.tag.length > 0)
+		.sort((a, b) => b.q - a.q);
+
+	for (const item of ranked) {
+		const base = item.tag.split('-')[0];
+		if (supported.has(base)) return base;
+	}
+
+	return null;
+}
+
+function detectLocale(req: NextRequest): string {
+	const localeCookie = req.cookies.get('NEXT_LOCALE')?.value;
+	if (isSupportedLocale(localeCookie)) return localeCookie;
+
+	const fromAcceptLanguage = pickLocaleFromAcceptLanguage(
+		req.headers.get('accept-language')
+	);
+	if (fromAcceptLanguage) return fromAcceptLanguage;
+
+	const country = req.headers.get('x-vercel-ip-country')?.toUpperCase();
+	const fromCountry = country ? COUNTRY_TO_LOCALE[country] : undefined;
+	if (isSupportedLocale(fromCountry)) return fromCountry;
+
+	return routing.defaultLocale;
+}
+
 export const config = {
 	// Match all pathnames except for
 	// - … if they start with `/api`, `/trpc`, `/_next` or `/_vercel`
@@ -17,6 +68,15 @@ export const config = {
 // pages as public. All other routes will be treated as protected.
 
 export default async function middleware(req: NextRequest) {
+	const path = req.nextUrl.pathname;
+	const isUnprefixedEntry = path === '/' || path === '/about' || path === '/about/';
+
+	if (isUnprefixedEntry) {
+		const locale = detectLocale(req);
+		const target = path.startsWith('/about') ? `/${locale}/about` : `/${locale}`;
+		return NextResponse.redirect(new URL(target, req.nextUrl));
+	}
+
 	// 1. Run next-intl middleware first so locale detection / redirects occur
 	const maybeIntl = (
 		nextIntlMiddleware as unknown as (r: NextRequest) => unknown
@@ -30,7 +90,6 @@ export default async function middleware(req: NextRequest) {
 	if (intlHandled) return intlResult;
 
 	// 2. Check if the current route is the locale root or `/` (public); otherwise protected
-	const path = req.nextUrl.pathname;
 	const locales = (routing as unknown as { locales?: string[] })?.locales;
 	const isLocaleRoot =
 		Array.isArray(locales) && locales.some((l) => path === `/${l}`);

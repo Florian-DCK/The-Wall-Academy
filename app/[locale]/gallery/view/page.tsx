@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
+import { hasLocale } from "next-intl";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { decrypt } from "@/app/lib/session";
 import type { SessionPayload } from "@/app/lib/definitions";
 import Gallery from "@/components/Gallery";
@@ -12,6 +14,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { routing } from "@/i18n/routing";
+import { buildPageMetadata } from "@/lib/page-metadata";
 
 type GalleryData = { id: number; title: string; createdAt: string };
 type GalleryImage = {
@@ -123,6 +127,16 @@ type PageProps = {
     | Promise<{ page?: string | string[] } | undefined>;
 };
 
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  if (!hasLocale(routing.locales, params.locale)) {
+    notFound();
+  }
+
+  return buildPageMetadata(params.locale, "galleryView", { noIndex: true });
+}
+
 const buildPaginationSegments = (current: number, total: number) => {
   const delta = 1;
   const range: number[] = [];
@@ -154,6 +168,10 @@ const buildPaginationSegments = (current: number, total: number) => {
 };
 
 export default async function Page({ params, searchParams }: PageProps) {
+  if (!hasLocale(routing.locales, params.locale)) {
+    notFound();
+  }
+
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get("session")?.value;
   if (!sessionToken) {

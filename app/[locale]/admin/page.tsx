@@ -1,8 +1,10 @@
 import fs from "fs/promises";
 import path from "path";
 import { randomUUID } from "node:crypto";
+import type { Metadata } from "next";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { hasLocale } from "next-intl";
 import AdminLoginForm, {
   type FormState,
 } from "@/components/admin/AdminLoginForm";
@@ -28,10 +30,23 @@ import {
   sanitizeNestedRelativePath,
   sanitizeSegment,
 } from "@/app/lib/media-manager";
+import { routing } from "@/i18n/routing";
+import { buildPageMetadata } from "@/lib/page-metadata";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
+
+  return buildPageMetadata(locale, "admin", { noIndex: true });
+}
 
 type TranslationTree = Record<string, unknown>;
 
@@ -770,6 +785,9 @@ async function logoutAction(locale: string) {
 
 export default async function AdminPage({ params }: PageProps) {
   const { locale } = await params;
+  if (!hasLocale(routing.locales, locale)) {
+    notFound();
+  }
 
   const session = await getAdminSession();
 

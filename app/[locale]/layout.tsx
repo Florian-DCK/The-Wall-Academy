@@ -92,11 +92,11 @@ export async function generateMetadata({
 	const { description, keywords, localeName } =
 		localeMeta[locale] ?? localeMeta[routing.defaultLocale];
 	const metadataBase = await resolveMetadataBase();
-	const canonicalPath = locale === routing.defaultLocale ? '/' : `/${locale}`;
+	const canonicalPath = `/${locale}`;
 	const absoluteCanonicalUrl = new URL(canonicalPath, metadataBase).toString();
 
 	const languages = routing.locales.reduce((acc, loc) => {
-		const path = loc === routing.defaultLocale ? '/' : `/${loc}`;
+		const path = `/${loc}`;
 		acc[loc] = new URL(path, metadataBase).toString();
 		return acc;
 	}, {} as Record<string, string>);
