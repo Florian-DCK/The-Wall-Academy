@@ -11,6 +11,11 @@ type PageCopy = {
 
 const SITE_NAME = "The Wall Academy";
 const metadataBase = resolveSiteUrlOrLocalhost();
+const SITE_NAME_BY_LOCALE: Record<LocaleCode, string> = {
+  en: "The Wall Academy - Hockey Camps",
+  fr: "The Wall Academy - Stages de hockey",
+  nl: "The Wall Academy - Hockeystages",
+};
 
 const PAGE_COPY: Record<PageKey, Record<LocaleCode, PageCopy>> = {
   home: {
@@ -133,6 +138,8 @@ export function buildPageMetadata(
 ): Metadata {
   const resolvedLocale = normalizeLocale(locale);
   const copy = PAGE_COPY[page][resolvedLocale];
+  const localizedSiteName = SITE_NAME_BY_LOCALE[resolvedLocale];
+  const localizedTitle = copy.title.replace(SITE_NAME, localizedSiteName);
   const canonicalPath = toLocalizedPath(resolvedLocale, PAGE_PATH[page]);
 
   const languages = SUPPORTED_LOCALES.reduce<Record<string, string>>(
@@ -147,7 +154,7 @@ export function buildPageMetadata(
 
   return {
     metadataBase,
-    title: copy.title,
+    title: localizedTitle,
     description: copy.description,
     applicationName: SITE_NAME,
     alternates: {
@@ -155,7 +162,7 @@ export function buildPageMetadata(
       languages,
     },
     openGraph: {
-      title: copy.title,
+      title: localizedTitle,
       description: copy.description,
       url: toUrl(canonicalPath),
       siteName: SITE_NAME,
@@ -164,7 +171,7 @@ export function buildPageMetadata(
     },
     twitter: {
       card: "summary_large_image",
-      title: copy.title,
+      title: localizedTitle,
       description: copy.description,
     },
     robots: options?.noIndex

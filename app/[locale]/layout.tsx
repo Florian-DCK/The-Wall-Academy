@@ -32,7 +32,12 @@ const resolveMetadataBase = async () => {
 
 const localeMeta: Record<
 	string,
-	{ description: string; keywords: string[]; localeName: string }
+	{
+		description: string;
+		keywords: string[];
+		localeName: string;
+		seoTagline: string;
+	}
 > = {
 	en: {
 		description: defaultDescription,
@@ -46,6 +51,7 @@ const localeMeta: Record<
 			'stage',
 		],
 		localeName: 'English',
+		seoTagline: 'Hockey Camps',
 	},
 	fr: {
 		description: 'Site de The Wall Academy de Vincent Vanasch',
@@ -59,6 +65,7 @@ const localeMeta: Record<
 			'stage',
 		],
 		localeName: 'Francais',
+		seoTagline: 'Stages de hockey',
 	},
 	nl: {
 		description: 'Website van The Wall Academy van Vincent Vanasch',
@@ -72,6 +79,7 @@ const localeMeta: Record<
 			'stage',
 		],
 		localeName: 'Nederlands',
+		seoTagline: 'Hockeystages',
 	},
 };
 
@@ -86,8 +94,9 @@ export async function generateMetadata({
 		notFound();
 	}
 
-	const { description, keywords, localeName } =
+	const { description, keywords, localeName, seoTagline } =
 		localeMeta[locale] ?? localeMeta[routing.defaultLocale];
+	const siteTitle = `${SITE_NAME} - ${seoTagline}`;
 	const metadataBase = await resolveMetadataBase();
 	const canonicalPath = `/${locale}`;
 	const absoluteCanonicalUrl = new URL(canonicalPath, metadataBase).toString();
@@ -102,8 +111,8 @@ export async function generateMetadata({
 		metadataBase,
 		applicationName: SITE_NAME,
 		title: {
-			default: SITE_NAME,
-			template: `%s | ${SITE_NAME}`,
+			default: siteTitle,
+			template: `%s | ${siteTitle}`,
 		},
 		description,
 		keywords,
@@ -117,7 +126,7 @@ export async function generateMetadata({
 			languages,
 		},
 		openGraph: {
-			title: SITE_NAME,
+			title: siteTitle,
 			description,
 			url: absoluteCanonicalUrl,
 			siteName: SITE_NAME,
@@ -137,7 +146,7 @@ export async function generateMetadata({
 		},
 		twitter: {
 			card: 'summary_large_image',
-			title: SITE_NAME,
+			title: siteTitle,
 			description,
 			images: [
 				{
