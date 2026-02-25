@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '../../generated/prisma-client/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/app/lib/prisma';
 // GET /api/gallery
 
 export async function GET(request: NextRequest) {

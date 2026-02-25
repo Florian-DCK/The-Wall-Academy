@@ -5,10 +5,8 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-import { PrismaClient } from "../../generated/prisma-client/client";
+import { prisma } from "@/app/lib/prisma";
 import { decrypt } from "@/app/lib/session";
-
-const prisma = new PrismaClient();
 
 // même logique que ton API images
 const PUBLIC_ROOT = path.join(process.cwd(), "public");

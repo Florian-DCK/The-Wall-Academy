@@ -20,7 +20,7 @@ import {
 } from "@/app/lib/admin-auth";
 import carouselConfig from "@/data/carousel.json";
 import { SUPPORTED_LOCALES } from "@/i18n/routing";
-import { PrismaClient, Prisma } from "@/app/generated/prisma-client/client";
+import { Prisma } from "@/app/generated/prisma-client/client";
 import {
   DEFAULT_PUBLIC_UPLOAD_DIR,
   GALLERIES_BASE,
@@ -32,6 +32,7 @@ import {
 } from "@/app/lib/media-manager";
 import { routing } from "@/i18n/routing";
 import { buildPageMetadata } from "@/lib/page-metadata";
+import { prisma } from "@/app/lib/prisma";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -51,7 +52,6 @@ export async function generateMetadata({
 type TranslationTree = Record<string, unknown>;
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const prisma = new PrismaClient();
 
 function flattenTranslations(
   node: TranslationTree,

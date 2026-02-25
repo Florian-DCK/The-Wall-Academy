@@ -6,7 +6,7 @@ import { promises as fs } from "node:fs";
 import imageSize from "image-size";
 import { NextRequest, NextResponse } from "next/server";
 
-import { PrismaClient } from "@/app/generated/prisma-client/client";
+import { prisma } from "@/app/lib/prisma";
 import { getAdminSession } from "@/app/lib/admin-auth";
 import {
   GALLERIES_BASE,
@@ -15,7 +15,6 @@ import {
   sanitizeSegment,
 } from "@/app/lib/media-manager";
 
-const prisma = new PrismaClient();
 const IMAGE_EXT = /\.(?:jpe?g|png|webp|gif|bmp|tiff)$/i;
 const SIGNING_SECRET =
   process.env.IMAGE_SIGNATURE_SECRET ??

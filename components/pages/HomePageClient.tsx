@@ -493,9 +493,11 @@ const Home = () => {
         <div className="relative w-full h-96 lg:h-[calc(100vh/1.2)] overflow-hidden">
           <iframe
             className="absolute top-0 left-0 w-full h-full"
-            src="https://www.youtube.com/embed/dTm5ax1g5uE"
+            src="https://www.youtube-nocookie.com/embed/dTm5ax1g5uE?rel=0&modestbranding=1"
             title="YouTube video player"
             frameBorder="0"
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           ></iframe>

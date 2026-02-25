@@ -109,11 +109,14 @@ export default async function middleware(req: NextRequest) {
 		isLocaleRoot || isRoot || isAdminRoute || isGalleryLanding || isAboutPage;
 	const isProtectedRoute = !isPublicRoute;
 
-	const cookie = req.cookies.get('session')?.value ?? null;
-	const session = cookie ? await decrypt(cookie) : null;
-	const hasSession = Boolean(session?.GalleryId);
+	if (isProtectedRoute) {
+		const cookie = req.cookies.get('session')?.value ?? null;
+		const session = cookie ? await decrypt(cookie) : null;
+		const hasSession = Boolean(session?.GalleryId);
+		if (hasSession) {
+			return intlResult ?? NextResponse.next();
+		}
 
-	if (isProtectedRoute && !hasSession) {
 		const matchedLocale = Array.isArray(locales)
 			? locales.find((l) => path === `/${l}` || path.startsWith(`/${l}/`))
 			: undefined;

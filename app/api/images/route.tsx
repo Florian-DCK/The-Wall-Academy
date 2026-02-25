@@ -5,11 +5,8 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import imageSize from "image-size";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-
-import { PrismaClient } from "../../generated/prisma-client/client";
+import { prisma } from "@/app/lib/prisma";
 import { decrypt } from "@/app/lib/session";
-
-const prisma = new PrismaClient();
 const IMAGE_EXT = /\.(?:jpe?g|png|webp|gif|bmp|tiff)$/i;
 const PUBLIC_ROOT = path.join(process.cwd(), "public");
 const GALLERIES_FOLDER = process.env.GALLERIES_FOLDER
