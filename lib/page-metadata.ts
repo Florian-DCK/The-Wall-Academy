@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "@/i18n/routing";
+import { resolveSiteUrlOrLocalhost } from "@/lib/site-url";
 
 type LocaleCode = (typeof SUPPORTED_LOCALES)[number];
 type PageKey = "home" | "about" | "gallery" | "galleryView" | "admin";
@@ -9,11 +10,7 @@ type PageCopy = {
 };
 
 const SITE_NAME = "The Wall Academy";
-const metadataBase =
-  process.env.NEXT_PUBLIC_SITE_URL &&
-  process.env.NEXT_PUBLIC_SITE_URL.startsWith("http")
-    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
-    : new URL("http://localhost:3000");
+const metadataBase = resolveSiteUrlOrLocalhost();
 
 const PAGE_COPY: Record<PageKey, Record<LocaleCode, PageCopy>> = {
   home: {

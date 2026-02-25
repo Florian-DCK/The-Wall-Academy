@@ -6,13 +6,10 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import CursorFollower from '@/components/CursorFollower';
 import EventBanner from '@/components/EventBanner';
+import { resolveSiteUrlFromEnv } from '@/lib/site-url';
 
 const SITE_NAME = 'The Wall Academy';
-const envMetadataBase =
-	process.env.NEXT_PUBLIC_SITE_URL &&
-	process.env.NEXT_PUBLIC_SITE_URL.startsWith('http')
-		? new URL(process.env.NEXT_PUBLIC_SITE_URL)
-		: undefined;
+const envMetadataBase = resolveSiteUrlFromEnv();
 
 const defaultDescription = 'Website for The Wall Academy of Vincent Vanasch';
 
