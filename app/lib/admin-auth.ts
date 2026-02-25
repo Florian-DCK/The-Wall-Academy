@@ -4,21 +4,27 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
 const COOKIE_NAME = "admin-session";
-const ADMIN_SECRET = process.env.ADMIN_SECRET ?? process.env.SESSION_SECRET;
-
-if (!ADMIN_SECRET) {
-  throw new Error(
-    "Missing ADMIN_SECRET (fallback SESSION_SECRET) environment variable for admin authentication."
-  );
-}
-
-const encodedKey = new TextEncoder().encode(ADMIN_SECRET);
 
 type AdminPayload = {
   role: "admin";
 };
 
+const getEncodedAdminKey = () => {
+  const adminSecret = process.env.ADMIN_SECRET ?? process.env.SESSION_SECRET;
+  if (!adminSecret) {
+    return null;
+  }
+  return new TextEncoder().encode(adminSecret);
+};
+
 export async function createAdminSession() {
+  const encodedKey = getEncodedAdminKey();
+  if (!encodedKey) {
+    throw new Error(
+      "Missing ADMIN_SECRET (fallback SESSION_SECRET) environment variable for admin authentication."
+    );
+  }
+
   const token = await new SignJWT({ role: "admin" })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
@@ -36,6 +42,11 @@ export async function createAdminSession() {
 }
 
 export async function getAdminSession() {
+  const encodedKey = getEncodedAdminKey();
+  if (!encodedKey) {
+    return null;
+  }
+
   const token = (await cookies()).get(COOKIE_NAME)?.value;
   if (!token) {
     return null;
